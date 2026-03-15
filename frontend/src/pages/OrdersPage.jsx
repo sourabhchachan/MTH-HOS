@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { getOrders } from '../api';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { 
   ArrowLeft, Package, RefreshCw, AlertTriangle,
-  Clock, CheckCircle2, XCircle, ChevronRight, User
+  Clock, CheckCircle2, XCircle, ChevronRight, User, X, Filter
 } from 'lucide-react';
 
 const statusConfig = {
@@ -20,18 +20,37 @@ const statusConfig = {
 
 const OrdersPage = () => {
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [tab, setTab] = useState('active');
+  
+  // Get filter params from URL
+  const statusFilter = searchParams.get('status');
+  const priorityFilter = searchParams.get('priority');
+  const departmentFilter = searchParams.get('department');
+  const hasFilters = statusFilter || priorityFilter || departmentFilter;
 
   useEffect(() => {
     loadOrders();
-  }, []);
+    // Set initial tab based on status filter
+    if (statusFilter === 'COMPLETED') {
+      setTab('completed');
+    } else if (statusFilter === 'CANCELLED') {
+      setTab('cancelled');
+    } else {
+      setTab('active');
+    }
+  }, [statusFilter]);
 
   const loadOrders = async () => {
     setLoading(true);
     try {
-      const response = await getOrders({ limit: 100 });
+      const params = { limit: 100 };
+      if (statusFilter) params.status = statusFilter;
+      if (priorityFilter) params.priority = priorityFilter;
+      if (departmentFilter) params.department_id = departmentFilter;
+      const response = await getOrders(params);
       setOrders(response.data);
     } catch (error) {
       console.error('Failed to load orders:', error);
@@ -40,11 +59,33 @@ const OrdersPage = () => {
     }
   };
 
-  const activeOrders = orders.filter(o => 
+  const clearFilters = () => {
+    setSearchParams({});
+  };
+
+  // Apply filters to orders
+  let filteredOrders = orders;
+  if (statusFilter) {
+    filteredOrders = orders.filter(o => o.status === statusFilter);
+  }
+  if (priorityFilter) {
+    filteredOrders = filteredOrders.filter(o => o.priority === priorityFilter);
+  }
+
+  const activeOrders = filteredOrders.filter(o => 
     !['COMPLETED', 'CANCELLED'].includes(o.status)
   );
-  const completedOrders = orders.filter(o => o.status === 'COMPLETED');
-  const cancelledOrders = orders.filter(o => o.status === 'CANCELLED');
+  const completedOrders = filteredOrders.filter(o => o.status === 'COMPLETED');
+  const cancelledOrders = filteredOrders.filter(o => o.status === 'CANCELLED');
+
+  // Get filter label for display
+  const getFilterLabel = () => {
+    const labels = [];
+    if (statusFilter) labels.push(`Status: ${statusFilter.replace('_', ' ')}`);
+    if (priorityFilter) labels.push(`Priority: ${priorityFilter}`);
+    if (departmentFilter) labels.push(`Dept: ${departmentFilter}`);
+    return labels.join(' • ');
+  };
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -69,6 +110,23 @@ const OrdersPage = () => {
             + New Order
           </Button>
         </div>
+        {/* Filter indicator */}
+        {hasFilters && (
+          <div className="mt-2 flex items-center gap-2 p-2 bg-orange-50 rounded-lg">
+            <Filter className="w-4 h-4 text-orange-500" />
+            <span className="text-sm text-orange-700 flex-1">{getFilterLabel()}</span>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={clearFilters}
+              className="h-6 px-2 text-orange-600 hover:text-orange-800"
+              data-testid="clear-filters-btn"
+            >
+              <X className="w-4 h-4" />
+              Clear
+            </Button>
+          </div>
+        )}
       </header>
 
       <main className="px-4 py-4">

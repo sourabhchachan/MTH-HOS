@@ -21,9 +21,13 @@ import {
   UserPlus, TrendingUp, FileText, Search, ChevronRight, Loader2
 } from 'lucide-react';
 
-// Metric Card Component
-const MetricCard = ({ label, value, icon: Icon, color = 'blue', subtitle }) => (
-  <Card className="bg-white border-gray-100">
+// Metric Card Component - Now clickable with drill-down
+const MetricCard = ({ label, value, icon: Icon, color = 'blue', subtitle, onClick, testId }) => (
+  <Card 
+    className={`bg-white border-gray-100 ${onClick ? 'cursor-pointer hover:border-orange-300 hover:shadow-md transition-all' : ''}`}
+    onClick={onClick}
+    data-testid={testId}
+  >
     <CardContent className="p-4">
       <div className="flex items-start justify-between">
         <div>
@@ -35,6 +39,12 @@ const MetricCard = ({ label, value, icon: Icon, color = 'blue', subtitle }) => (
           <Icon className={`w-5 h-5 text-${color}-500`} />
         </div>
       </div>
+      {onClick && (
+        <div className="mt-2 flex items-center text-xs text-orange-500">
+          <span>Click to view details</span>
+          <ChevronRight className="w-3 h-3 ml-1" />
+        </div>
+      )}
     </CardContent>
   </Card>
 );
@@ -339,45 +349,62 @@ const AdminDashboardPage = () => {
                     value={mainData.order_metrics.orders_created_today}
                     icon={Package}
                     color="blue"
+                    onClick={() => navigate('/orders')}
+                    testId="metric-orders-today"
                   />
                   <MetricCard
                     label="Pending Dispatch"
                     value={mainData.order_metrics.orders_pending_dispatch}
                     icon={Clock}
                     color="orange"
+                    onClick={() => navigate('/dispatch?status=PENDING')}
+                    testId="metric-pending-dispatch"
                   />
                   <MetricCard
                     label="Partially Dispatched"
                     value={mainData.order_metrics.orders_partially_dispatched}
                     icon={Activity}
                     color="amber"
+                    onClick={() => navigate('/dispatch?status=PARTIAL')}
+                    testId="metric-partial-dispatch"
                   />
                   <MetricCard
                     label="Awaiting Receipt"
                     value={mainData.order_metrics.orders_awaiting_receipt}
                     icon={FileText}
                     color="purple"
+                    onClick={() => navigate('/orders?status=FULLY_DISPATCHED')}
+                    testId="metric-awaiting-receipt"
                   />
                   <MetricCard
                     label="Completed Today"
                     value={mainData.order_metrics.orders_completed_today}
                     icon={CheckCircle2}
                     color="green"
+                    onClick={() => navigate('/orders?status=COMPLETED')}
+                    testId="metric-completed-today"
                   />
                   <MetricCard
                     label="Urgent Pending"
                     value={mainData.order_metrics.urgent_orders_pending}
                     icon={AlertTriangle}
                     color="red"
+                    onClick={() => navigate('/orders?priority=URGENT')}
+                    testId="metric-urgent-pending"
                   />
                 </div>
 
-                {/* Patient Metrics */}
-                <Card className="border-gray-100 bg-white">
+                {/* Patient Metrics - clickable */}
+                <Card 
+                  className="border-gray-100 bg-white cursor-pointer hover:border-blue-300 hover:shadow-md transition-all"
+                  onClick={() => setTab('patient')}
+                  data-testid="patient-metrics-card"
+                >
                   <CardHeader className="pb-2">
                     <CardTitle className="text-base flex items-center gap-2">
                       <Users className="w-5 h-5 text-blue-500" />
                       Patient Metrics
+                      <ChevronRight className="w-4 h-4 text-gray-400 ml-auto" />
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="p-4 pt-0">
@@ -404,14 +431,14 @@ const AdminDashboardPage = () => {
                       <Building2 className="w-5 h-5 text-orange-500" />
                       Department Workload
                     </CardTitle>
-                    <CardDescription className="text-xs">Orders pending per department</CardDescription>
+                    <CardDescription className="text-xs">Click a department to view dispatch queue</CardDescription>
                   </CardHeader>
                   <CardContent className="p-4 pt-0 space-y-2">
                     {mainData.department_workload.slice(0, 5).map((dept) => (
                       <DepartmentRow
                         key={dept.department_id}
                         dept={dept}
-                        onClick={() => setTab('department')}
+                        onClick={() => navigate(`/dispatch?department=${dept.department_id}`)}
                       />
                     ))}
                     {mainData.department_workload.length > 5 && (
@@ -471,17 +498,25 @@ const AdminDashboardPage = () => {
                 <Card className="border-gray-100 bg-white">
                   <CardContent className="p-4 space-y-2">
                     {deptData.departments.map((dept) => (
-                      <div key={dept.department_id} className="p-3 bg-gray-50 rounded-lg">
+                      <div 
+                        key={dept.department_id} 
+                        className="p-3 bg-gray-50 rounded-lg hover:bg-orange-50 cursor-pointer transition-colors"
+                        onClick={() => navigate(`/dispatch?department=${dept.department_id}`)}
+                        data-testid={`dept-detail-${dept.department_id}`}
+                      >
                         <div className="flex items-center justify-between mb-2">
                           <div>
                             <p className="font-medium text-gray-800">{dept.department_name}</p>
                             <p className="text-xs text-gray-500">{dept.department_code}</p>
                           </div>
-                          {dept.avg_dispatch_time_hours && (
-                            <Badge variant="outline" className="text-xs">
-                              Avg: {dept.avg_dispatch_time_hours}h
-                            </Badge>
-                          )}
+                          <div className="flex items-center gap-2">
+                            {dept.avg_dispatch_time_hours && (
+                              <Badge variant="outline" className="text-xs">
+                                Avg: {dept.avg_dispatch_time_hours}h
+                              </Badge>
+                            )}
+                            <ChevronRight className="w-4 h-4 text-gray-400" />
+                          </div>
                         </div>
                         <div className="grid grid-cols-4 gap-2 text-center">
                           <div>
@@ -507,6 +542,7 @@ const AdminDashboardPage = () => {
                             {dept.urgent_orders_handled} urgent handled today
                           </div>
                         )}
+                        <p className="mt-2 text-xs text-orange-500">Click to view dispatch queue →</p>
                       </div>
                     ))}
                   </CardContent>
@@ -698,11 +734,20 @@ const AdminDashboardPage = () => {
                       <Building2 className="w-5 h-5 text-blue-500" />
                       By Department
                     </CardTitle>
+                    <CardDescription className="text-xs">Click to view orders from department</CardDescription>
                   </CardHeader>
                   <CardContent className="p-4 pt-0 space-y-2">
                     {Object.entries(billingData.billing_by_department || {}).map(([dept, info]) => (
-                      <div key={dept} className="flex items-center justify-between p-2 bg-gray-50 rounded">
-                        <span className="text-sm text-gray-700">{dept}</span>
+                      <div 
+                        key={dept} 
+                        className="flex items-center justify-between p-2 bg-gray-50 rounded hover:bg-blue-50 cursor-pointer transition-colors"
+                        onClick={() => navigate(`/orders?status=COMPLETED`)}
+                        data-testid={`billing-dept-${dept}`}
+                      >
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm text-gray-700">{dept}</span>
+                          <ChevronRight className="w-3 h-3 text-gray-400" />
+                        </div>
                         <div className="text-right">
                           <p className="text-sm font-semibold">₹{info.amount.toLocaleString()}</p>
                           <p className="text-xs text-gray-500">{info.count} bills</p>

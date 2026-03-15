@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { getDispatchQueue, dispatchItem } from '../api';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -16,17 +16,24 @@ import {
 } from '@/components/ui/dialog';
 import { 
   ArrowLeft, Package, AlertTriangle, Send, Clock,
-  User, RefreshCw
+  User, RefreshCw, X, Filter
 } from 'lucide-react';
 
 const DispatchPage = () => {
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [queue, setQueue] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedItem, setSelectedItem] = useState(null);
   const [dispatchQty, setDispatchQty] = useState('');
   const [dispatchNotes, setDispatchNotes] = useState('');
   const [submitting, setSubmitting] = useState(false);
+
+  // Get filter params from URL
+  const statusFilter = searchParams.get('status'); // PENDING, PARTIAL
+  const departmentFilter = searchParams.get('department');
+  const priorityFilter = searchParams.get('priority');
+  const hasFilters = statusFilter || departmentFilter || priorityFilter;
 
   useEffect(() => {
     loadQueue();
@@ -35,13 +42,40 @@ const DispatchPage = () => {
   const loadQueue = async () => {
     setLoading(true);
     try {
-      const response = await getDispatchQueue();
+      const params = {};
+      if (departmentFilter) params.department_id = departmentFilter;
+      const response = await getDispatchQueue(params);
       setQueue(response.data);
     } catch (error) {
       console.error('Failed to load dispatch queue:', error);
     } finally {
       setLoading(false);
     }
+  };
+
+  const clearFilters = () => {
+    setSearchParams({});
+  };
+
+  // Apply client-side filters
+  let filteredQueue = queue;
+  if (statusFilter === 'PENDING') {
+    filteredQueue = queue.filter(i => i.quantity_dispatched === 0);
+  } else if (statusFilter === 'PARTIAL') {
+    filteredQueue = queue.filter(i => i.quantity_dispatched > 0 && i.quantity_pending > 0);
+  }
+  if (priorityFilter) {
+    filteredQueue = filteredQueue.filter(i => i.order_priority === priorityFilter);
+  }
+
+  // Get filter label for display
+  const getFilterLabel = () => {
+    const labels = [];
+    if (statusFilter === 'PENDING') labels.push('Pending Dispatch');
+    if (statusFilter === 'PARTIAL') labels.push('Partially Dispatched');
+    if (priorityFilter) labels.push(`Priority: ${priorityFilter}`);
+    if (departmentFilter) labels.push(`Dept: ${departmentFilter}`);
+    return labels.join(' • ');
   };
 
   const openDispatchDialog = (item) => {
@@ -75,8 +109,8 @@ const DispatchPage = () => {
     }
   };
 
-  const urgentItems = queue.filter(i => i.order_priority === 'URGENT');
-  const normalItems = queue.filter(i => i.order_priority === 'NORMAL');
+  const urgentItems = filteredQueue.filter(i => i.order_priority === 'URGENT');
+  const normalItems = filteredQueue.filter(i => i.order_priority === 'NORMAL');
 
   return (
     <div className="min-h-screen bg-white pb-20 safe-area-top">
@@ -92,6 +126,23 @@ const DispatchPage = () => {
             <RefreshCw className={`w-5 h-5 ${loading ? 'animate-spin' : ''}`} />
           </Button>
         </div>
+        {/* Filter indicator */}
+        {hasFilters && (
+          <div className="mt-2 flex items-center gap-2 p-2 bg-orange-50 rounded-lg">
+            <Filter className="w-4 h-4 text-orange-500" />
+            <span className="text-sm text-orange-700 flex-1">{getFilterLabel()}</span>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={clearFilters}
+              className="h-6 px-2 text-orange-600 hover:text-orange-800"
+              data-testid="clear-filters-btn"
+            >
+              <X className="w-4 h-4" />
+              Clear
+            </Button>
+          </div>
+        )}
       </header>
 
       <main className="px-4 py-4 space-y-6">
@@ -99,11 +150,20 @@ const DispatchPage = () => {
           <div className="flex items-center justify-center py-12">
             <div className="animate-spin w-8 h-8 border-2 border-orange-500 border-t-transparent rounded-full" />
           </div>
-        ) : queue.length === 0 ? (
+        ) : filteredQueue.length === 0 ? (
           <div className="text-center py-12">
             <Package className="w-16 h-16 mx-auto mb-4 text-gray-300" />
-            <h2 className="text-lg font-semibold text-gray-900 mb-2">No Pending Items</h2>
-            <p className="text-gray-500">All items have been dispatched</p>
+            <h2 className="text-lg font-semibold text-gray-900 mb-2">
+              {hasFilters ? 'No Matching Items' : 'No Pending Items'}
+            </h2>
+            <p className="text-gray-500">
+              {hasFilters ? 'Try clearing filters to see all items' : 'All items have been dispatched'}
+            </p>
+            {hasFilters && (
+              <Button variant="outline" onClick={clearFilters} className="mt-4">
+                Clear Filters
+              </Button>
+            )}
           </div>
         ) : (
           <>
