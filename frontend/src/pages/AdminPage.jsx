@@ -35,7 +35,7 @@ import {
 } from '@/components/ui/select';
 import { 
   ArrowLeft, Users, Building2, Package, Truck, Wrench, UserPlus,
-  Plus, Settings, Edit2, Power, Upload, Download, Search, RefreshCw, Play
+  Plus, Settings, Edit2, Power, Upload, Download, Search, RefreshCw, Play, Database
 } from 'lucide-react';
 
 const AdminPage = () => {
@@ -102,8 +102,28 @@ const AdminPage = () => {
           <TabsContent value="patients"><PatientsTab /></TabsContent>
         </Tabs>
 
+        {/* Data Seed Card */}
+        <Card className="border-blue-200 bg-blue-50 mt-6">
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="font-medium text-blue-700">Quick Data Setup</p>
+                <p className="text-sm text-blue-600">Populate system with hospital operational data</p>
+              </div>
+              <Button 
+                onClick={() => navigate('/data-seed')}
+                className="bg-blue-500 hover:bg-blue-600"
+                data-testid="data-seed-btn"
+              >
+                <Database className="w-4 h-4 mr-2" />
+                Seed Data
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+
         {/* System Test Button */}
-        <Card className="border-orange-200 bg-orange-50 mt-6">
+        <Card className="border-orange-200 bg-orange-50 mt-4">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>

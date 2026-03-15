@@ -14,7 +14,7 @@ const BottomNav = () => {
   const location = useLocation();
 
   // Don't show on login page, admin pages, reports, or system-test
-  const hiddenPaths = ['/login', '/admin', '/reports', '/system-test', '/create-order', '/create-return'];
+  const hiddenPaths = ['/login', '/admin', '/reports', '/system-test', '/create-order', '/create-return', '/data-seed'];
   if (hiddenPaths.some(p => location.pathname.startsWith(p))) {
     return null;
   }

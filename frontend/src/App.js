@@ -17,6 +17,7 @@ import AdminPage from './pages/AdminPage.jsx';
 import ReportsPage from './pages/ReportsPage';
 import SystemTestPage from './pages/SystemTestPage';
 import ProfilePage from './pages/ProfilePage';
+import DataSeedPage from './pages/DataSeedPage';
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
@@ -158,6 +159,14 @@ function AppRoutes() {
         element={
           <ProtectedRoute>
             <ProfilePage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/data-seed"
+        element={
+          <ProtectedRoute>
+            <DataSeedPage />
           </ProtectedRoute>
         }
       />

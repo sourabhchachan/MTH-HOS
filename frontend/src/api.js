@@ -156,4 +156,11 @@ export const recordMaintenance = (data) => api.post('/assets/maintenance', data)
 // Seed categories
 export const seedCategories = () => api.post('/setup/seed-categories');
 
+// ============ Data Seeding APIs ============
+export const getSeedStatus = () => api.get('/seed/status');
+export const seedAllData = () => api.post('/seed/all');
+export const seedDepartments = () => api.post('/seed/departments');
+export const seedVendors = () => api.post('/seed/vendors');
+export const seedCategoriesData = () => api.post('/seed/categories');
+
 export default api;
