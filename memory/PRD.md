@@ -16,48 +16,29 @@ Order-driven hospital operating system where all hospital operations follow a un
 - **Primary Color**: Orange (buttons, active tabs, badges, urgent indicators)
 - **Mobile-first design**: Large touch-friendly inputs and buttons
 
-## User Personas
-
-### Hospital Staff (Ward/ICU/Emergency)
-- Create orders for items (medicines, lab tests, consumables)
-- Receive dispatched items
-- Track order status
-- Create return orders
-
-### Dispatching Staff (Pharmacy/Lab/Kitchen)
-- View dispatch queue with priority sorting
-- Dispatch items (full or partial)
-- Track pending dispatches
-
-### Admin
-- Manage departments, users, items, vendors, assets, patients
-- View cost information and billing
-- Access operational and financial reports
-- Configure item permissions
-- Run system test workflow
-- Monitor insights and alerts
-
 ## Core Requirements Implemented
 
-### Bottom Navigation Bar ✅ (NEW - March 2026)
+### Data Seeding Module ✅ (NEW - March 2026)
+One-click setup to populate operational hospital data:
+- **14 Departments**: Admin, Emergency, OPD, IPD Ward, ICU, Laboratory, Radiology, Pharmacy, Central Store, Billing, Accounts, Housekeeping, Maintenance, Biomedical
+- **8 Vendors**: Medical suppliers, Diagnostic labs, Radiology, Biomedical maintenance, Equipment, Housekeeping, Surgical supplies, Facility management
+- **45+ Items**: Lab tests (CBC, LFT, KFT), Radiology (X-Ray, CT, MRI), Medicines (Paracetamol, Amoxicillin), Consumables (Syringes, Gloves), Services (Housekeeping, Maintenance)
+- **20 Assets**: Ventilators, Monitors, Defibrillators, Beds, Wheelchairs, AC units, Computers
+- **22 Staff Users**: Doctors, Nurses, Lab techs, Pharmacists, Store staff, Housekeeping, Maintenance
+- **Default Password**: 1234 (for all seeded users)
+
+### Bottom Navigation Bar ✅
 - Fixed bottom navigation with 4 tabs: Home, Orders, Dispatch, Profile
 - Orange highlight for active tab
 - Touch-friendly tap targets (97.5x64px per button)
 - Hidden on admin/login/reports/create pages
-- pb-20 padding on all main pages
 
-### Profile Page ✅ (NEW - March 2026)
+### Profile Page ✅
 - User info card (name, designation, badges)
 - Contact information (phone, email, employee code)
 - Department info (primary + secondary)
 - Admin Actions section for admin users
 - Sign Out button
-
-### Authentication & Session ✅
-- Phone-based JWT authentication
-- "Keep me signed in" checkbox
-- Session persistence (localStorage for persistent, sessionStorage for session-only)
-- Secure token handling
 
 ### Admin Setup Modules ✅
 - **Departments Setup**: Create/Edit/Activate/Deactivate
@@ -107,6 +88,7 @@ Order-driven hospital operating system where all hospital operations follow a un
 4. **patient_workflow.py** - Phase tracking and pre-admission
 5. **assets.py** - Asset and maintenance management
 6. **setup.py** - Admin setup modules
+7. **data_seeder.py** - Quick data setup for operational testing
 
 ### Frontend Pages
 1. **LoginPage** - Phone-based authentication with "Keep me signed in"
@@ -121,6 +103,7 @@ Order-driven hospital operating system where all hospital operations follow a un
 10. **ReportsPage** - Admin reports and analytics
 11. **SystemTestPage** - Guided end-to-end test workflow
 12. **ProfilePage** - User profile with admin actions
+13. **DataSeedPage** - Quick data setup interface
 
 ### Frontend Components
 1. **BottomNav** - Fixed bottom navigation bar
@@ -139,6 +122,7 @@ Order-driven hospital operating system where all hospital operations follow a un
 - [x] System Test Workflow
 - [x] Bottom Navigation Bar
 - [x] Profile Page
+- [x] Data Seeding Module
 
 ## P1 (Important) - Backlog
 - [ ] PDF report generation
@@ -156,11 +140,19 @@ Order-driven hospital operating system where all hospital operations follow a un
 ## Login Credentials
 | Role | Phone | Password |
 |------|-------|----------|
-| Admin | 9999999999 | admin123 |
-| Ward Doctor | 9876543210 | user123 |
-| Ward Nurse | 9876543211 | user123 |
-| Pharmacist | 9876543212 | user123 |
-| Lab Tech | 9876543213 | user123 |
+| System Admin | 9999999999 | admin123 |
+| Hospital Admin | 9999999998 | 1234 |
+| Ward Doctor | 9876543210 | 1234 |
+| ICU Consultant | 9876543220 | 1234 |
+| Emergency Doctor | 9876543230 | 1234 |
+| Lab Technician | 9876543240 | 1234 |
+| Radiographer | 9876543250 | 1234 |
+| Pharmacist | 9876543260 | 1234 |
+| Store Incharge | 9876543270 | 1234 |
+| Housekeeping | 9876543280 | 1234 |
+| Maintenance | 9876543290 | 1234 |
+| Biomedical | 9876543300 | 1234 |
+| Billing | 9876543310 | 1234 |
 
 ## Navigation Structure
 
@@ -179,14 +171,21 @@ Order-driven hospital operating system where all hospital operations follow a un
 - /create-order
 - /create-return
 - /system-test
+- /data-seed
 
 ## API Endpoints Summary
+
+### Data Seeding
+- `GET /api/seed/status` - Get current seed status (counts)
+- `POST /api/seed/all` - Seed all operational data
+- `POST /api/seed/departments` - Seed departments only
+- `POST /api/seed/vendors` - Seed vendors only
+- `POST /api/seed/categories` - Seed categories only
 
 ### Core Order Operations
 - `POST /api/orders` - Create order
 - `GET /api/orders` - List orders
 - `GET /api/orders/{id}` - Get order details
-- `PUT /api/orders/{id}/cancel` - Cancel order
 
 ### Dispatch & Receive
 - `GET /api/dispatch-queue` - Get dispatch queue
@@ -202,23 +201,22 @@ Order-driven hospital operating system where all hospital operations follow a un
 - `POST /api/setup/items/csv-upload` - Upload items via CSV
 - `GET /api/setup/users/all` - List all users
 - `GET /api/setup/patients` - List patients
-- `POST /api/setup/patients` - Create patient
 
-## Theme Configuration
-```css
-/* Primary Colors */
---primary: 24 95% 53%;           /* Orange #f97316 */
---primary-foreground: 0 0% 100%; /* White */
---background: 0 0% 100%;         /* White */
---foreground: 222 47% 11%;       /* Dark gray */
+## Seeded Data Summary
 
-/* Active Tab Highlight */
-text-orange-500                   /* Active nav tab color */
-```
+### Departments (14)
+Admin, Emergency, OPD, IPD Ward, ICU, Laboratory, Radiology, Pharmacy, Central Store, Billing, Accounts, Housekeeping, Maintenance, Biomedical
 
-## Mobile Design Specifications
-- **Bottom Nav Height**: h-16 (64px)
-- **Nav Tap Targets**: 97.5x64px (exceeds 44px minimum)
-- **Page Bottom Padding**: pb-20 (80px for nav clearance)
-- **Input Height**: h-12 or h-14 for touch-friendly fields
-- **Button Height**: h-12 or h-14 for touch-friendly buttons
+### Items by Category
+- **Lab Tests (7)**: CBC, Blood Sugar, LFT, KFT, Thyroid, Urine, Blood Culture
+- **Radiology (7)**: X-Ray Chest, X-Ray Abdomen, USG, CT Scan, MRI, ECG, 2D Echo
+- **Medicines (8)**: Paracetamol, Amoxicillin, Omeprazole, Metformin, Amlodipine, Ceftriaxone, Normal Saline, Dextrose
+- **Consumables (10)**: Syringes, IV Cannulas, Gloves, Cotton, Gauze, Masks, Urine Bags
+- **Housekeeping (5)**: Bed Cleaning, Room Sanitization, Linen Change, Waste Disposal, Floor Mopping
+- **Maintenance (7)**: AC, Plumbing, Electrical, Ventilator, Monitor, Infusion Pump, IT Support
+
+### Assets (20)
+Ventilators, Patient Monitors, Infusion Pumps, Defibrillators, ECG Machine, Oxygen Concentrator, Suction Machine, Wheelchair, Stretcher, Patient Beds, AC Units, Computers, Printers
+
+### Vendors (8)
+Medical Supplier, Diagnostic Lab, Radiology Center, Biomedical Maintenance, Equipment Supplier, Housekeeping/Laundry, Surgical Supplies, Facility Management
