@@ -424,6 +424,21 @@ class DispatchEventResponse(BaseModel):
     receiver: Optional[UserMinimal] = None
 
 
+# Pending Receive Item - with order info for frontend
+class PendingReceiveItem(BaseModel):
+    dispatch_event_id: int
+    order_item_id: int
+    order_id: int
+    order_number: str
+    item_name: str
+    quantity_dispatched: int
+    quantity_received: int
+    quantity_pending: int
+    dispatched_at: datetime
+    patient_name: Optional[str] = None
+    ordering_department: str
+
+
 # Dispatch Queue Item
 class DispatchQueueItem(BaseModel):
     model_config = ConfigDict(from_attributes=True)

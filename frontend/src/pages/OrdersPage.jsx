@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { getOrders, receiveItem } from '../api';
+import { getOrders, receiveItem, getPendingReceive } from '../api';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -88,16 +88,30 @@ const OrdersPage = () => {
     
     setReceiving(true);
     try {
-      // Receive all items for this order
-      const items = selectedOrderForReceive.items || [];
-      for (const item of items) {
-        if (item.quantity_dispatched > item.quantity_received) {
+      // First get pending receive items (dispatch events)
+      const pendingRes = await getPendingReceive();
+      const pendingReceive = pendingRes.data || [];
+      
+      // Filter dispatch events for this order
+      const orderDispatchEvents = pendingReceive.filter(
+        event => event.order_id === selectedOrderForReceive.id
+      );
+      
+      if (orderDispatchEvents.length === 0) {
+        toast.error('No items to receive for this order');
+        return;
+      }
+      
+      // Receive each dispatch event
+      for (const event of orderDispatchEvents) {
+        if (event.quantity_pending > 0) {
           await receiveItem({
-            order_item_id: item.id,
-            quantity_received: item.quantity_dispatched - item.quantity_received
+            dispatch_event_id: event.dispatch_event_id,
+            quantity_received: event.quantity_pending
           });
         }
       }
+      
       toast.success('Order received successfully!');
       setReceiveModalOpen(false);
       setSelectedOrderForReceive(null);

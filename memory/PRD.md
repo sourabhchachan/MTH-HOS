@@ -118,6 +118,26 @@ Real-time operational dashboards for hospital administrators:
 
 **Design**: Mobile-first, white background, orange highlights, large readable numbers
 
+### Quick Action Buttons ✅ (NEW - March 15, 2026)
+Touch-friendly quick action buttons on operational pages for faster workflow:
+
+**Dispatch Queue Page:**
+- Large orange "Dispatch" button (h-14 w-24) with Send icon
+- Opens dispatch modal immediately
+- Shows pending quantity in orange
+
+**Orders Page:**
+- Large green "Receive" button for FULLY_DISPATCHED orders
+- Opens receive confirmation modal
+- Shows items to receive with quantities
+- Confirms all dispatched items at once
+
+**Design Rules:**
+- Large touch-friendly buttons (56px height, 96px width)
+- Single primary action per row
+- Icon + label for clarity
+- Modals instead of page navigation
+
 ### Order System ✅
 - Order creation with item selection
 - Priority levels: Normal, Urgent (orange indicators)

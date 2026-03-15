@@ -1022,29 +1022,50 @@ async def dispatch_item(
     return result.scalar_one()
 
 
-@router.get("/pending-receive", response_model=List[DispatchEventResponse])
+@router.get("/pending-receive")
 async def get_pending_receive(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    """Get dispatched items pending receipt for current user's departments"""
-    user_depts = get_user_departments(current_user)
+    """Get dispatched items pending receipt for current user's departments (or all for admins)"""
     
-    result = await db.execute(
-        select(DispatchEvent)
+    # Build query with joins to get all needed info
+    query = (
+        select(DispatchEvent, OrderItem, Order, Item, Department, Patient)
         .join(OrderItem, DispatchEvent.order_item_id == OrderItem.id)
         .join(Order, OrderItem.order_id == Order.id)
-        .options(
-            selectinload(DispatchEvent.dispatcher),
-            selectinload(DispatchEvent.receiver)
-        )
-        .where(
-            Order.ordering_department_id.in_(user_depts),
-            DispatchEvent.received_at.is_(None)
-        )
-        .order_by(DispatchEvent.dispatched_at.asc())
+        .join(Item, OrderItem.item_id == Item.id)
+        .join(Department, Order.ordering_department_id == Department.id)
+        .outerjoin(Patient, Order.patient_id == Patient.id)
+        .where(DispatchEvent.received_at.is_(None))
     )
-    return result.scalars().all()
+    
+    # Filter by department for non-admin users
+    if not current_user.is_admin:
+        user_depts = get_user_departments(current_user)
+        query = query.where(Order.ordering_department_id.in_(user_depts))
+    
+    query = query.order_by(DispatchEvent.dispatched_at.asc())
+    result = await db.execute(query)
+    
+    items = []
+    for row in result.all():
+        dispatch_event, order_item, order, item, dept, patient = row
+        items.append({
+            "dispatch_event_id": dispatch_event.id,
+            "order_item_id": order_item.id,
+            "order_id": order.id,
+            "order_number": order.order_number,
+            "item_name": item.name,
+            "quantity_dispatched": dispatch_event.quantity_dispatched,
+            "quantity_received": dispatch_event.quantity_received or 0,
+            "quantity_pending": dispatch_event.quantity_dispatched - (dispatch_event.quantity_received or 0),
+            "dispatched_at": dispatch_event.dispatched_at.isoformat(),
+            "patient_name": patient.name if patient else None,
+            "ordering_department": dept.name
+        })
+    
+    return items
 
 
 @router.post("/receive", response_model=DispatchEventResponse)
@@ -1067,9 +1088,9 @@ async def receive_item(
     if not dispatch_event:
         raise HTTPException(status_code=404, detail="Dispatch event not found")
     
-    # Check receive permission
+    # Check receive permission (admin can receive any item)
     order = dispatch_event.order_item.order
-    if order.ordering_department_id not in user_depts:
+    if not current_user.is_admin and order.ordering_department_id not in user_depts:
         raise HTTPException(status_code=403, detail="Not authorized to receive this item")
     
     if dispatch_event.received_at:
