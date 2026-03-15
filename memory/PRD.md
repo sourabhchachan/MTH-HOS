@@ -5,7 +5,7 @@ Order-driven hospital operating system where all hospital operations follow a un
 **Order Creation → Automated Routing → Order Dispatch → Order Receipt → Order Completion**
 
 ## Tech Stack
-- **Backend**: FastAPI (Python) + PostgreSQL + Redis
+- **Backend**: FastAPI (Python) + PostgreSQL
 - **Frontend**: React PWA (Mobile-first)
 - **Authentication**: JWT with phone number login
 - **Permissions**: Department-based (not role-based)
@@ -24,7 +24,7 @@ Order-driven hospital operating system where all hospital operations follow a un
 - Track pending dispatches
 
 ### Admin
-- Manage departments, users, items, vendors
+- Manage departments, users, items, vendors, assets, patients
 - View cost information and billing
 - Access operational and financial reports
 - Configure item permissions
@@ -63,14 +63,28 @@ Order-driven hospital operating system where all hospital operations follow a un
 - [x] Cost visibility restricted to Admin and authorized users
 - [x] Payment tracking and status management
 
-### Item Master ✅
+### Admin Setup Modules ✅ (NEW - March 2026)
+- [x] **Departments Setup**: Create/Edit/Activate/Deactivate departments
+- [x] **Users Setup**: Create/Edit/Activate/Deactivate users, reset passwords
+- [x] **Vendors Setup**: Create/Edit/Activate/Deactivate vendors
+- [x] **Item Master Setup**: 
+  - Full form with all configuration fields
+  - Bulk CSV upload with validation
+  - Downloadable CSV template
+  - Seed initial categories
+- [x] **Assets Setup**: Create/Edit assets with maintenance tracking
+- [x] **Patients Setup**: Create/Edit patients with search functionality
+
+### Item Master Full Configuration ✅
 - [x] Dispatching department configuration
-- [x] Departments allowed to order (configurable)
-- [x] Patient IPD requirement settings
+- [x] Departments allowed to order (All or specific list)
+- [x] Patient IPD requirement settings (Mandatory/Non-Mandatory)
+- [x] IPD Status allowed (Active Only/Inactive Only/Both)
 - [x] Priority requirement settings
+- [x] Workflow phase configuration
 - [x] Vendor mapping
 - [x] Cost per unit (restricted visibility)
-- [x] Bulk upload via CSV template
+- [x] Bulk upload via CSV template with validation
 
 ### Patient Workflow Phase Tracking ✅
 - [x] Six phases: Pre-Admission → Admission → IPD → Discharge → Post-Discharge → Archived
@@ -104,8 +118,9 @@ Order-driven hospital operating system where all hospital operations follow a un
 - [x] Admin privileges
 - [x] Cost visibility permissions
 - [x] IPD reactivation permissions
+- [x] Password reset by admin
 
-## What's Been Implemented (Jan 2026)
+## What's Been Implemented (March 2026)
 
 ### Backend Modules
 1. **routes.py** - Core order, dispatch, receive APIs
@@ -113,6 +128,7 @@ Order-driven hospital operating system where all hospital operations follow a un
 3. **reports.py** - Admin reports and insight engine
 4. **patient_workflow.py** - Phase tracking and pre-admission
 5. **assets.py** - Asset and maintenance management
+6. **setup.py** - Admin setup modules (Departments, Users, Vendors, Items CSV, Patients)
 
 ### Frontend Pages
 1. **LoginPage** - Phone-based authentication
@@ -123,22 +139,31 @@ Order-driven hospital operating system where all hospital operations follow a un
 6. **ReceivePage** - Receipt confirmation
 7. **OrdersPage** - Order list with status tabs
 8. **OrderDetailPage** - Detailed order view
-9. **AdminPage** - Admin panel for entity management
+9. **AdminPage** - Comprehensive admin panel with 6 tabs:
+   - Departments (CRUD + toggle active)
+   - Users (CRUD + toggle active + password reset)
+   - Vendors (CRUD + toggle active)
+   - Item Master (CRUD + CSV upload + seed categories)
+   - Assets (CRUD with maintenance fields)
+   - Patients (CRUD with search)
 10. **ReportsPage** - Admin reports and analytics
 
 ## P0 (Critical) - Completed ✅
+- [x] Order workflow
 - [x] Return order workflow
 - [x] Billing engine
 - [x] Admin reports
 - [x] Patient workflow phases
 - [x] Pre-admission process
 - [x] Asset maintenance
+- [x] Admin Setup Modules (Departments, Users, Vendors, Items, Assets, Patients)
 
 ## P1 (Important) - Backlog
 - [ ] PDF report generation
 - [ ] Real-time notifications (WebSocket)
 - [ ] Attendance tracking module
 - [ ] Payroll integration
+- [ ] System Test Workflow (guided walkthrough for admins)
 
 ## P2 (Future) - Enhancements
 - [ ] SMS/WhatsApp notifications
@@ -183,6 +208,21 @@ Order-driven hospital operating system where all hospital operations follow a un
 - `GET /api/reports/insights` - Operational insights
 - `GET /api/reports/export/{type}` - Export to CSV
 
+### Admin Setup (NEW)
+- `GET /api/setup/departments/all` - List all departments (including inactive)
+- `GET /api/setup/vendors/all` - List all vendors (including inactive)
+- `PUT /api/setup/vendors/{id}` - Update vendor
+- `PUT /api/setup/vendors/{id}/toggle-active` - Toggle vendor active status
+- `GET /api/setup/items/all` - List all items with full details
+- `GET /api/setup/items/csv-template` - Get CSV template for bulk upload
+- `POST /api/setup/items/csv-upload` - Upload items via CSV
+- `POST /api/setup/seed-categories` - Seed initial item categories
+- `GET /api/setup/users/all` - List all users
+- `PUT /api/setup/users/{id}/reset-password` - Reset user password
+- `GET /api/setup/patients` - List patients with search
+- `POST /api/setup/patients` - Create patient
+- `PUT /api/setup/patients/{id}` - Update patient
+
 ### Patient Workflow
 - `POST /api/pre-admission/eligibility-check` - Eligibility check
 - `POST /api/pre-admission/admit` - Admit patient
@@ -192,5 +232,31 @@ Order-driven hospital operating system where all hospital operations follow a un
 ### Assets
 - `GET /api/assets` - List assets
 - `POST /api/assets` - Create asset
+- `PUT /api/assets/{id}` - Update asset
 - `GET /api/assets/maintenance-due` - Due maintenance
 - `POST /api/assets/maintenance` - Record maintenance
+
+## Item CSV Upload Template
+| Column | Description | Example |
+|--------|-------------|---------|
+| item_name | Item name | Paracetamol 500mg |
+| item_code | Unique code | MED001 |
+| category | Category name | Medicines |
+| dispatching_department_code | Department code | PHRM |
+| departments_allowed_to_order | ALL or comma-separated codes | ALL |
+| workflow_phase | Patient phase | IPD |
+| priority_requirement | MANDATORY or NON_MANDATORY | NON_MANDATORY |
+| patient_ipd_requirement | MANDATORY or NON_MANDATORY | NON_MANDATORY |
+| ipd_status_allowed | ACTIVE_ONLY, INACTIVE_ONLY, BOTH | BOTH |
+| cost | Unit cost | 2.50 |
+| vendor_code | Vendor code | VEND001 |
+| unit | Unit of measure | tablet |
+
+## Initial Item Categories
+- Medicines
+- Lab Tests
+- Radiology Tests
+- Consumables
+- Procedures
+- Maintenance Requests
+- Housekeeping Requests
