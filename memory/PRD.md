@@ -104,6 +104,18 @@ Real-time operational dashboards for hospital administrators:
 - Date range filter
 - CSV Export
 
+**5. Drill-Down Navigation** (Added March 15, 2026)
+- All metric cards show "Click to view details →"
+- Clickable metrics navigate to filtered operational pages:
+  - Pending Dispatch → `/dispatch?status=PENDING`
+  - Partially Dispatched → `/dispatch?status=PARTIAL`
+  - Completed Today → `/orders?status=COMPLETED`
+  - Urgent Pending → `/orders?priority=URGENT`
+  - Awaiting Receipt → `/orders?status=FULLY_DISPATCHED`
+- Department rows → `/dispatch?department={id}`
+- Filter indicators with Clear Filters button on target pages
+- Patient Metrics → Patients tab
+
 **Design**: Mobile-first, white background, orange highlights, large readable numbers
 
 ### Order System ✅
