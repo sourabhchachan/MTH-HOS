@@ -284,7 +284,7 @@ Full payment management with partial payment support and invoice generation:
 - [x] Order workflow
 - [x] Return order workflow (Full billing adjustment support - March 15, 2026)
 - [x] Billing engine
-- [x] Billing Engine Enhancements (Payment Recording, PDF Invoices - March 15, 2026) - NEW
+- [x] Billing Engine Enhancements (Payment Recording, PDF Invoices - March 15, 2026)
 - [x] Admin reports
 - [x] Patient workflow phases
 - [x] Pre-admission process
@@ -301,9 +301,17 @@ Full payment management with partial payment support and invoice generation:
 - [x] Drill-Down Navigation (March 15, 2026)
 - [x] Quick Action Buttons (March 15, 2026)
 - [x] Return Order Workflow with Billing Adjustments (March 15, 2026)
+- [x] Deployment Hardening (March 15, 2026) - NEW
+  - Error Logging System (system_logs table, middleware)
+  - Global Activity Log (activity_logs table)
+  - System Health Dashboard (dispatch delays, errors, performance)
+  - Database Backup System (pg_dump, 30-day retention)
+  - Performance Monitoring (API response times, p50/p95/p99)
+  - Stress Test Mode (Light: 500, Medium: 2000, Heavy: 5000 orders)
 
 ## P1 (Important) - Backlog
-- [ ] Insight Engine (Admin Intelligence Dashboard) - Next Priority
+- [ ] Shadow Deployment Testing - Next phase after hardening
+- [ ] Insight Engine (Admin Intelligence Dashboard) - After shadow testing
 - [ ] PDF report generation (export to PDF)
 - [ ] Real-time notifications (WebSocket)
 - [ ] Attendance tracking module
@@ -316,6 +324,7 @@ Full payment management with partial payment support and invoice generation:
 - [ ] Biometric attendance integration
 - [ ] Payment gateway integration (online payments)
 - [ ] Inventory stock management
+- [ ] Cloud backup integration (S3/GCS)
 - [ ] Vendor reconciliation reports
 
 ## Login Credentials
