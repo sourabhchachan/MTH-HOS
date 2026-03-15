@@ -18,7 +18,7 @@ Order-driven hospital operating system where all hospital operations follow a un
 
 ## Core Requirements Implemented
 
-### Data Seeding Module ✅ (NEW - March 2026)
+### Data Seeding Module ✅ (March 2026)
 One-click setup to populate operational hospital data:
 - **14 Departments**: Admin, Emergency, OPD, IPD Ward, ICU, Laboratory, Radiology, Pharmacy, Central Store, Billing, Accounts, Housekeeping, Maintenance, Biomedical
 - **8 Vendors**: Medical suppliers, Diagnostic labs, Radiology, Biomedical maintenance, Equipment, Housekeeping, Surgical supplies, Facility management
@@ -26,6 +26,25 @@ One-click setup to populate operational hospital data:
 - **20 Assets**: Ventilators, Monitors, Defibrillators, Beds, Wheelchairs, AC units, Computers
 - **22 Staff Users**: Doctors, Nurses, Lab techs, Pharmacists, Store staff, Housekeeping, Maintenance
 - **Default Password**: 1234 (for all seeded users)
+
+### Operational Workflow Simulation ✅ (NEW - March 15, 2026)
+Real-time workflow simulation to validate the entire operational engine:
+- **Philosophy**: Simulations generate REAL system orders, not fake logs
+- **Complete Workflow**: Order Creation → Auto Routing → Dispatch → Receive → Completion
+- **User/Time Stamps**: All actions remain properly stamped
+- **5 Simulation Scenarios**:
+  1. **Patient Admission Flow**: Create patient → Generate IPD → Admission order → Move to IPD phase
+  2. **Clinical Order Flow (Lab)**: Create Lab order → Route to Lab → Dispatch → Receive → Complete → Bill
+  3. **Pharmacy Order Flow**: Ward orders medicine → Pharmacy dispatches → Ward receives → Complete
+  4. **Partial Dispatch Flow**: Order 100 units → Dispatch 40 → Dispatch 60 → Receive all → Complete
+  5. **Return Order Flow**: Find completed order → Create return → Dispatch back → Receive return
+- **Dashboard Features**:
+  - Live Operational Metrics (Orders Today, Dispatched, Pending, Urgent, Completed, Admissions)
+  - Run Individual Scenarios with detailed step breakdown
+  - Run All Scenarios (Full Hospital Simulation)
+  - Reset Simulation Data (clears only simulation-generated records)
+  - Verification Checklist
+- **Access**: Admin only, via `/simulation` route or Admin Page
 
 ### Bottom Navigation Bar ✅
 - Fixed bottom navigation with 4 tabs: Home, Orders, Dispatch, Profile
@@ -89,6 +108,7 @@ One-click setup to populate operational hospital data:
 5. **assets.py** - Asset and maintenance management
 6. **setup.py** - Admin setup modules
 7. **data_seeder.py** - Quick data setup for operational testing
+8. **simulation.py** - Operational workflow simulation engine (NEW)
 
 ### Frontend Pages
 1. **LoginPage** - Phone-based authentication with "Keep me signed in"
@@ -104,6 +124,7 @@ One-click setup to populate operational hospital data:
 11. **SystemTestPage** - Guided end-to-end test workflow
 12. **ProfilePage** - User profile with admin actions
 13. **DataSeedPage** - Quick data setup interface
+14. **SimulationPage** - Operational workflow simulation dashboard (NEW)
 
 ### Frontend Components
 1. **BottomNav** - Fixed bottom navigation bar
@@ -123,6 +144,7 @@ One-click setup to populate operational hospital data:
 - [x] Bottom Navigation Bar
 - [x] Profile Page
 - [x] Data Seeding Module
+- [x] Operational Workflow Simulation (March 15, 2026)
 
 ## P1 (Important) - Backlog
 - [ ] PDF report generation
@@ -172,8 +194,20 @@ One-click setup to populate operational hospital data:
 - /create-return
 - /system-test
 - /data-seed
+- /simulation
 
 ## API Endpoints Summary
+
+### Operational Simulation (NEW)
+- `GET /api/simulation/metrics` - Get live operational metrics
+- `GET /api/simulation/summary` - Get comprehensive simulation summary
+- `POST /api/simulation/scenario/patient-admission` - Run patient admission scenario
+- `POST /api/simulation/scenario/clinical-order` - Run clinical order (lab) scenario
+- `POST /api/simulation/scenario/pharmacy-order` - Run pharmacy order scenario
+- `POST /api/simulation/scenario/partial-dispatch` - Run partial dispatch scenario
+- `POST /api/simulation/scenario/return-order` - Run return order scenario
+- `POST /api/simulation/run-all` - Run all 5 scenarios together
+- `POST /api/simulation/reset` - Reset simulation-generated data
 
 ### Data Seeding
 - `GET /api/seed/status` - Get current seed status (counts)
