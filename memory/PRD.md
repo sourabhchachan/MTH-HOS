@@ -145,10 +145,51 @@ Touch-friendly quick action buttons on operational pages for faster workflow:
 - Auto-routing to dispatching department
 - Order status tracking
 
-### Return Order Workflow ✅
-- Create return orders referencing original order
-- Select items and quantities to return
-- Return reason selection
+### Return Order Workflow ✅ (Complete - March 15, 2026)
+Full return management with billing adjustments:
+
+**Return Creation Flow:**
+1. Open completed order → "Create Return" button
+2. Select items from original order to return
+3. Enter return quantities (max = received - already returned)
+4. Select return reason from predefined list
+5. Submit creates Return Order + Billing Adjustment
+
+**Predefined Return Reasons (Admin Configurable):**
+- Unused
+- Wrong Item
+- Excess Quantity
+- Defective Item
+- Damaged Item
+- Other
+
+**Billing Adjustment Rules (Financial Audit Compliant):**
+- Original billing records are NEVER modified or deleted
+- All adjustments create separate BillingAdjustment records
+
+*For Unpaid Orders:*
+- Creates RETURN_DEDUCTION adjustment
+- Outstanding amount reduced by return value
+- Example: Original ₹1000, Return ₹200 → Outstanding ₹800
+
+*For Paid Orders:*
+- Creates RETURN_CREDIT adjustment with is_credit=true
+- Credit record linked to Original Billing ID + Return Order ID
+- Credit appears in financial reports
+
+**Return Order Workflow:**
+- Return orders follow standard workflow: Created → Dispatched → Received → Completed
+- Full audit trail with timestamps and user stamps
+- Return orders visible in Orders page "Returns" tab
+- Return order details show original order link and return reason
+
+**API Endpoints:**
+- GET /api/returns/returnable-orders - List completed orders available for return
+- GET /api/returns/order/{id}/returnable-items - Get items that can be returned
+- POST /api/returns/create - Create return order with billing adjustment
+- GET /api/returns/billing-adjustments - List all billing adjustments
+- GET /api/returns/billing/{id}/effective-amount - Calculate effective billing
+- GET /api/returns/orders - List return orders
 
 ### Dispatch System ✅
 - Department-specific dispatch queues
@@ -200,7 +241,7 @@ Touch-friendly quick action buttons on operational pages for faster workflow:
 
 ## P0 (Critical) - Completed ✅
 - [x] Order workflow
-- [x] Return order workflow
+- [x] Return order workflow (Full billing adjustment support - March 15, 2026)
 - [x] Billing engine
 - [x] Admin reports
 - [x] Patient workflow phases
@@ -214,15 +255,22 @@ Touch-friendly quick action buttons on operational pages for faster workflow:
 - [x] Profile Page
 - [x] Data Seeding Module
 - [x] Operational Workflow Simulation (March 15, 2026)
-- [x] Admin Operational Dashboards (March 15, 2026) - NEW
+- [x] Admin Operational Dashboards (March 15, 2026)
+- [x] Drill-Down Navigation (March 15, 2026)
+- [x] Quick Action Buttons (March 15, 2026)
+- [x] Return Order Workflow with Billing Adjustments (March 15, 2026) - NEW
 
 ## P1 (Important) - Backlog
+- [ ] Billing Engine Enhancements: Payment Recording, PDF Invoice Generation
 - [ ] PDF report generation
 - [ ] Real-time notifications (WebSocket)
 - [ ] Attendance tracking module
 - [ ] Payroll integration
 
 ## P2 (Future) - Enhancements
+- [ ] Insight Engine (Admin Intelligence Dashboard)
+- [ ] Patient Workflow Phase Tracking automation
+- [ ] Asset Maintenance Automation
 - [ ] SMS/WhatsApp notifications
 - [ ] Biometric attendance integration
 - [ ] Payment gateway integration
@@ -304,6 +352,14 @@ Touch-friendly quick action buttons on operational pages for faster workflow:
 - `POST /api/orders` - Create order
 - `GET /api/orders` - List orders
 - `GET /api/orders/{id}` - Get order details
+
+### Return Order Operations (NEW)
+- `GET /api/returns/returnable-orders` - List completed orders available for return
+- `GET /api/returns/order/{id}/returnable-items` - Get items that can be returned
+- `POST /api/returns/create` - Create return order with billing adjustment
+- `GET /api/returns/billing-adjustments` - List all billing adjustments
+- `GET /api/returns/billing/{id}/effective-amount` - Calculate effective billing
+- `GET /api/returns/orders` - List return orders
 
 ### Dispatch & Receive
 - `GET /api/dispatch-queue` - Get dispatch queue

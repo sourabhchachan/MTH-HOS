@@ -191,11 +191,11 @@ const CreateReturnPage = () => {
                   )}
                 </Button>
               </SheetTrigger>
-              <SheetContent side="bottom" className="h-[85vh] rounded-t-2xl">
+              <SheetContent side="bottom" className="h-[85vh] rounded-t-2xl flex flex-col">
                 <SheetHeader>
                   <SheetTitle>Return Items ({totalReturnItems})</SheetTitle>
                 </SheetHeader>
-                <div className="mt-4 space-y-4 overflow-auto h-[calc(100%-250px)]">
+                <div className="mt-4 space-y-4 overflow-auto flex-1 min-h-0">
                   {returnItems.filter(i => i.return_quantity > 0).length === 0 ? (
                     <div className="text-center py-8 text-muted-foreground">
                       <RotateCcw className="w-12 h-12 mx-auto mb-2 opacity-50" />
@@ -239,7 +239,7 @@ const CreateReturnPage = () => {
 
                 {/* Return Summary & Submission */}
                 {totalReturnItems > 0 && (
-                  <div className="space-y-4 mt-4 border-t border-border pt-4">
+                  <div className="space-y-4 mt-4 border-t border-border pt-4 flex-shrink-0">
                     {/* Billing Impact Notice */}
                     {returnSummary?.billing_id && (
                       <div className="p-3 rounded-lg bg-blue-500/10 border border-blue-500/30">

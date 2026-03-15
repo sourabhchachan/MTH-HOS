@@ -1197,11 +1197,80 @@ async def get_dashboard(
         orders_completed_today=orders_completed.scalar() or 0
     )
     
-    # Get dispatch queue (limited)
-    dispatch_queue = await get_dispatch_queue(db, current_user)
+    # Get dispatch queue data directly (internal helper - no FastAPI DI)
+    dispatch_query = (
+        select(OrderItem, Order, Item, Department, Patient, IPD)
+        .join(Order, OrderItem.order_id == Order.id)
+        .join(Item, OrderItem.item_id == Item.id)
+        .join(Department, Order.ordering_department_id == Department.id)
+        .outerjoin(Patient, Order.patient_id == Patient.id)
+        .outerjoin(IPD, Order.ipd_id == IPD.id)
+        .where(
+            OrderItem.status.in_([OrderItemStatus.PENDING_DISPATCH, OrderItemStatus.PARTIALLY_DISPATCHED])
+        )
+    )
     
-    # Get pending receive (limited)
-    pending_receive_items = await get_pending_receive(db, current_user)
+    if not current_user.is_admin:
+        dispatch_query = dispatch_query.where(OrderItem.dispatching_department_id.in_(user_depts))
+    
+    dispatch_query = dispatch_query.order_by(Order.priority.desc(), Order.created_at.asc()).limit(10)
+    dispatch_result = await db.execute(dispatch_query)
+    
+    dispatch_queue = []
+    for row in dispatch_result.all():
+        order_item, order, item, dept, patient, ipd = row
+        dispatch_queue.append(DispatchQueueItem(
+            order_item_id=order_item.id,
+            order_id=order.id,
+            order_number=order.order_number,
+            order_priority=order.priority,
+            item_id=item.id,
+            item_name=item.name,
+            item_code=item.code,
+            unit=item.unit,
+            quantity_requested=order_item.quantity_requested,
+            quantity_dispatched=order_item.quantity_dispatched,
+            quantity_pending=order_item.quantity_requested - order_item.quantity_dispatched,
+            status=order_item.status,
+            ordering_department=dept.name,
+            patient_name=patient.name if patient else None,
+            ipd_number=ipd.ipd_number if ipd else None,
+            created_at=order.created_at
+        ))
+    
+    # Get pending receive data directly (internal helper - no FastAPI DI)
+    receive_query = (
+        select(DispatchEvent, OrderItem, Order, Item, Department, Patient)
+        .join(OrderItem, DispatchEvent.order_item_id == OrderItem.id)
+        .join(Order, OrderItem.order_id == Order.id)
+        .join(Item, OrderItem.item_id == Item.id)
+        .join(Department, Order.ordering_department_id == Department.id)
+        .outerjoin(Patient, Order.patient_id == Patient.id)
+        .where(DispatchEvent.received_at.is_(None))
+    )
+    
+    if not current_user.is_admin:
+        receive_query = receive_query.where(Order.ordering_department_id.in_(user_depts))
+    
+    receive_query = receive_query.order_by(DispatchEvent.dispatched_at.asc()).limit(10)
+    receive_result = await db.execute(receive_query)
+    
+    pending_receive_items = []
+    for row in receive_result.all():
+        dispatch_event, order_item, order, item, dept, patient = row
+        pending_receive_items.append({
+            "dispatch_event_id": dispatch_event.id,
+            "order_item_id": order_item.id,
+            "order_id": order.id,
+            "order_number": order.order_number,
+            "item_name": item.name,
+            "quantity_dispatched": dispatch_event.quantity_dispatched,
+            "quantity_received": dispatch_event.quantity_received or 0,
+            "quantity_pending": dispatch_event.quantity_dispatched - (dispatch_event.quantity_received or 0),
+            "dispatched_at": dispatch_event.dispatched_at.isoformat(),
+            "patient_name": patient.name if patient else None,
+            "ordering_department": dept.name
+        })
     
     secondary_depts = [sd.department for sd in current_user.secondary_departments]
     user_response = UserResponse(
