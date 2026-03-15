@@ -65,8 +65,17 @@ class OrderItemStatus(str, enum.Enum):
 class BillingStatus(str, enum.Enum):
     PENDING = "PENDING"
     GENERATED = "GENERATED"
+    PARTIAL = "PARTIAL"  # Partial payment received
     PAID = "PAID"
     CANCELLED = "CANCELLED"
+
+
+class PaymentMode(str, enum.Enum):
+    CASH = "CASH"
+    CARD = "CARD"
+    UPI = "UPI"
+    INSURANCE = "INSURANCE"
+    OTHER = "OTHER"
 
 
 class AssetStatus(str, enum.Enum):
@@ -371,6 +380,7 @@ class Billing(Base):
     
     # Relationships
     order = relationship("Order", back_populates="billing")
+    payments = relationship("Payment", back_populates="billing", cascade="all, delete-orphan")
 
 
 class BillingItem(Base):
@@ -386,6 +396,30 @@ class BillingItem(Base):
     cost_per_unit = Column(Numeric(12, 2), nullable=False)
     quantity_dispatched = Column(Integer, nullable=False)
     line_amount = Column(Numeric(12, 2), nullable=False)
+
+
+class Payment(Base):
+    """
+    Individual payment records against a billing.
+    Multiple payments allowed per billing (partial payment support).
+    Billing records are NEVER modified - payments are separate records.
+    """
+    __tablename__ = "payments"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    payment_number = Column(String(30), unique=True, nullable=False)
+    billing_id = Column(Integer, ForeignKey("billing.id"), nullable=False)
+    amount = Column(Numeric(12, 2), nullable=False)
+    payment_mode = Column(Enum(PaymentMode), nullable=False)
+    payment_date = Column(DateTime(timezone=True), server_default=func.now())
+    payment_reference = Column(String(100))  # Transaction ID, Check number, etc.
+    notes = Column(Text)
+    recorded_by = Column(Integer, ForeignKey("users.id"), nullable=False)
+    recorded_at = Column(DateTime(timezone=True), server_default=func.now())
+    
+    # Relationships
+    billing = relationship("Billing", back_populates="payments")
+    recorder = relationship("User", foreign_keys=[recorded_by])
 
 
 class Asset(Base):

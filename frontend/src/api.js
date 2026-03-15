@@ -192,4 +192,13 @@ export const getReturnOrders = (params) => api.get('/returns/orders', { params }
 export const getBillingAdjustments = (params) => api.get('/returns/billing-adjustments', { params });
 export const getBillingEffectiveAmount = (billingId) => api.get(`/returns/billing/${billingId}/effective-amount`);
 
+// ============ Payment Recording APIs ============
+export const getBilling = (params) => api.get('/billing', { params });
+export const getBillingById = (id) => api.get(`/billing/${id}`);
+export const recordPayment = (data) => api.post('/billing/payments', data);
+export const getBillingPayments = (billingId) => api.get(`/billing/${billingId}/payments`);
+export const getBillingPaymentSummary = (billingId) => api.get(`/billing/${billingId}/summary`);
+export const getTodayBillingStats = () => api.get('/billing/dashboard/today');
+export const downloadInvoice = (billingId) => api.get(`/billing/${billingId}/invoice`, { responseType: 'blob' });
+
 export default api;

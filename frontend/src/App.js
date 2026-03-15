@@ -20,6 +20,7 @@ import ProfilePage from './pages/ProfilePage';
 import DataSeedPage from './pages/DataSeedPage';
 import SimulationPage from './pages/SimulationPage';
 import AdminDashboardPage from './pages/AdminDashboardPage';
+import BillingPage from './pages/BillingPage';
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
@@ -185,6 +186,14 @@ function AppRoutes() {
         element={
           <ProtectedRoute>
             <AdminDashboardPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/billing"
+        element={
+          <ProtectedRoute>
+            <BillingPage />
           </ProtectedRoute>
         }
       />

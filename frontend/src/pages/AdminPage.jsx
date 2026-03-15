@@ -35,7 +35,7 @@ import {
 } from '@/components/ui/select';
 import { 
   ArrowLeft, Users, Building2, Package, Truck, Wrench, UserPlus,
-  Plus, Settings, Edit2, Power, Upload, Download, Search, RefreshCw, Play, Database, BarChart2
+  Plus, Settings, Edit2, Power, Upload, Download, Search, RefreshCw, Play, Database, BarChart2, Receipt
 } from 'lucide-react';
 
 const AdminPage = () => {
@@ -137,6 +137,26 @@ const AdminPage = () => {
               >
                 <BarChart2 className="w-4 h-4 mr-2" />
                 View
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Billing & Payments */}
+        <Card className="border-emerald-200 bg-emerald-50 mt-4">
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="font-medium text-emerald-700">Billing & Payments</p>
+                <p className="text-sm text-emerald-600">Record payments, view outstanding, download invoices</p>
+              </div>
+              <Button 
+                onClick={() => navigate('/billing')}
+                className="bg-emerald-600 hover:bg-emerald-700"
+                data-testid="billing-btn"
+              >
+                <Receipt className="w-4 h-4 mr-2" />
+                Manage
               </Button>
             </div>
           </CardContent>
