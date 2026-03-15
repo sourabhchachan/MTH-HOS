@@ -21,6 +21,7 @@ import DataSeedPage from './pages/DataSeedPage';
 import SimulationPage from './pages/SimulationPage';
 import AdminDashboardPage from './pages/AdminDashboardPage';
 import BillingPage from './pages/BillingPage';
+import SystemLogsPage from './pages/SystemLogsPage';
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
@@ -194,6 +195,14 @@ function AppRoutes() {
         element={
           <ProtectedRoute>
             <BillingPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/system-logs"
+        element={
+          <ProtectedRoute>
+            <SystemLogsPage />
           </ProtectedRoute>
         }
       />

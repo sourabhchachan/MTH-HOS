@@ -24,6 +24,9 @@ AsyncSessionLocal = async_sessionmaker(
     autoflush=False
 )
 
+# Alias for compatibility
+async_session_maker = AsyncSessionLocal
+
 Base = declarative_base()
 
 async def get_db():

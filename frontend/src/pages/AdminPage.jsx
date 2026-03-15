@@ -35,7 +35,7 @@ import {
 } from '@/components/ui/select';
 import { 
   ArrowLeft, Users, Building2, Package, Truck, Wrench, UserPlus,
-  Plus, Settings, Edit2, Power, Upload, Download, Search, RefreshCw, Play, Database, BarChart2, Receipt
+  Plus, Settings, Edit2, Power, Upload, Download, Search, RefreshCw, Play, Database, BarChart2, Receipt, Activity, HardDrive
 } from 'lucide-react';
 
 const AdminPage = () => {
@@ -157,6 +157,26 @@ const AdminPage = () => {
               >
                 <Receipt className="w-4 h-4 mr-2" />
                 Manage
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* System Logs & Health */}
+        <Card className="border-purple-200 bg-purple-50 mt-4">
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="font-medium text-purple-700">System Logs & Health</p>
+                <p className="text-sm text-purple-600">Error logs, activity tracking, backups, performance</p>
+              </div>
+              <Button 
+                onClick={() => navigate('/system-logs')}
+                className="bg-purple-600 hover:bg-purple-700"
+                data-testid="system-logs-btn"
+              >
+                <Activity className="w-4 h-4 mr-2" />
+                View
               </Button>
             </div>
           </CardContent>

@@ -20,6 +20,11 @@ from data_seeder import router as seeder_router
 from simulation import router as simulation_router
 from dashboards import router as dashboards_router
 from returns import router as returns_router
+from logging_service import router as logging_router
+from system_health import router as health_router
+from backup_system import router as backup_router
+from stress_test import router as stress_router
+from middleware import ErrorLoggingMiddleware
 
 # Configure logging
 logging.basicConfig(
@@ -56,6 +61,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Error Logging Middleware (for deployment hardening)
+app.add_middleware(ErrorLoggingMiddleware)
+
 # Include routes
 app.include_router(api_router, prefix="/api")
 app.include_router(billing_router, prefix="/api")
@@ -67,6 +75,10 @@ app.include_router(seeder_router, prefix="/api")
 app.include_router(simulation_router, prefix="/api")
 app.include_router(dashboards_router, prefix="/api")
 app.include_router(returns_router, prefix="/api")
+app.include_router(logging_router, prefix="/api")
+app.include_router(health_router, prefix="/api")
+app.include_router(backup_router, prefix="/api")
+app.include_router(stress_router, prefix="/api")
 
 
 @app.get("/")

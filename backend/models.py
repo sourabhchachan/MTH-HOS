@@ -666,3 +666,112 @@ class Notification(Base):
     reference_type = Column(String(50))
     reference_id = Column(Integer)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+
+class SystemLogLevel(str, enum.Enum):
+    DEBUG = "DEBUG"
+    INFO = "INFO"
+    WARNING = "WARNING"
+    ERROR = "ERROR"
+    CRITICAL = "CRITICAL"
+
+
+class SystemLog(Base):
+    """
+    Centralized error logging for deployment monitoring.
+    Captures API failures, DB errors, Auth failures, Order/Billing errors.
+    """
+    __tablename__ = "system_logs"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    timestamp = Column(DateTime(timezone=True), server_default=func.now(), index=True)
+    level = Column(Enum(SystemLogLevel), default=SystemLogLevel.ERROR, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"))
+    endpoint = Column(String(255), index=True)
+    method = Column(String(10))
+    error_type = Column(String(100), index=True)  # API, DATABASE, AUTH, ORDER, BILLING
+    error_message = Column(Text)
+    stack_trace = Column(Text)
+    request_body = Column(Text)
+    response_status = Column(Integer)
+    ip_address = Column(String(45))
+    user_agent = Column(String(500))
+    duration_ms = Column(Integer)  # Request duration for performance tracking
+    
+    # Relationships
+    user = relationship("User", foreign_keys=[user_id])
+
+
+class ActivityLogAction(str, enum.Enum):
+    # Order Actions
+    ORDER_CREATED = "ORDER_CREATED"
+    ORDER_DISPATCHED = "ORDER_DISPATCHED"
+    ORDER_RECEIVED = "ORDER_RECEIVED"
+    ORDER_COMPLETED = "ORDER_COMPLETED"
+    ORDER_CANCELLED = "ORDER_CANCELLED"
+    # Return Actions
+    RETURN_CREATED = "RETURN_CREATED"
+    RETURN_DISPATCHED = "RETURN_DISPATCHED"
+    RETURN_RECEIVED = "RETURN_RECEIVED"
+    # Billing Actions
+    BILLING_GENERATED = "BILLING_GENERATED"
+    PAYMENT_RECORDED = "PAYMENT_RECORDED"
+    BILLING_ADJUSTED = "BILLING_ADJUSTED"
+    # Master Data Actions
+    USER_CREATED = "USER_CREATED"
+    USER_UPDATED = "USER_UPDATED"
+    DEPARTMENT_CREATED = "DEPARTMENT_CREATED"
+    DEPARTMENT_UPDATED = "DEPARTMENT_UPDATED"
+    ITEM_CREATED = "ITEM_CREATED"
+    ITEM_UPDATED = "ITEM_UPDATED"
+    VENDOR_CREATED = "VENDOR_CREATED"
+    VENDOR_UPDATED = "VENDOR_UPDATED"
+    ASSET_CREATED = "ASSET_CREATED"
+    ASSET_UPDATED = "ASSET_UPDATED"
+    PATIENT_CREATED = "PATIENT_CREATED"
+    PATIENT_UPDATED = "PATIENT_UPDATED"
+    IPD_CREATED = "IPD_CREATED"
+    IPD_UPDATED = "IPD_UPDATED"
+    # Auth Actions
+    USER_LOGIN = "USER_LOGIN"
+    USER_LOGOUT = "USER_LOGOUT"
+    PASSWORD_CHANGED = "PASSWORD_CHANGED"
+    # System Actions
+    SIMULATION_RUN = "SIMULATION_RUN"
+    BACKUP_CREATED = "BACKUP_CREATED"
+    DATA_SEEDED = "DATA_SEEDED"
+
+
+class ActivityLogEntityType(str, enum.Enum):
+    ORDER = "ORDER"
+    BILLING = "BILLING"
+    PAYMENT = "PAYMENT"
+    USER = "USER"
+    DEPARTMENT = "DEPARTMENT"
+    ITEM = "ITEM"
+    VENDOR = "VENDOR"
+    ASSET = "ASSET"
+    PATIENT = "PATIENT"
+    IPD = "IPD"
+    SYSTEM = "SYSTEM"
+
+
+class ActivityLog(Base):
+    """
+    Global activity log for tracking major system actions.
+    Used for audit trail and operational monitoring.
+    """
+    __tablename__ = "activity_logs"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    timestamp = Column(DateTime(timezone=True), server_default=func.now(), index=True)
+    user_id = Column(Integer, ForeignKey("users.id"))
+    action_type = Column(Enum(ActivityLogAction), nullable=False, index=True)
+    entity_type = Column(Enum(ActivityLogEntityType), nullable=False, index=True)
+    entity_id = Column(Integer, index=True)
+    entity_identifier = Column(String(100))  # Order number, billing number, etc.
+    details = Column(JSON)
+    ip_address = Column(String(45))
+    
+    # Relationships
+    user = relationship("User", foreign_keys=[user_id])
