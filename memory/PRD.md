@@ -71,6 +71,41 @@ Real-time workflow simulation to validate the entire operational engine:
 - Guided 5-step wizard for admins
 - Patient → Order → Dispatch → Receive → Complete
 
+### Admin Operational Dashboards ✅ (NEW - March 15, 2026)
+Real-time operational dashboards for hospital administrators:
+
+**1. Main Dashboard (Overview Tab)**
+- Order Metrics: Orders Today, Pending Dispatch, Partially Dispatched, Awaiting Receipt, Completed Today, Urgent Pending
+- Patient Metrics: Active IPD Patients, Patients by Phase
+- Department Workload Preview
+- Filters: Date, Department
+
+**2. Department Workload Dashboard**
+- All departments with workload statistics
+- Columns: Total Assigned, Pending, Partial, Completed Today
+- Average dispatch time per department
+- Urgent orders handled indicator
+- CSV Export
+
+**3. Patient Operations Dashboard**
+- Active IPD patients list
+- Search by UHID or Name
+- Click patient to view orders modal
+- Order history with billing per patient
+- Length of stay calculation
+- CSV Export
+
+**4. Billing Summary Dashboard**
+- Today's Billing, This Month's Billing
+- Period Summary (Total, Paid, Pending)
+- Billing by Department
+- Top Items by Revenue
+- Billing by Consultant/Staff
+- Date range filter
+- CSV Export
+
+**Design**: Mobile-first, white background, orange highlights, large readable numbers
+
 ### Order System ✅
 - Order creation with item selection
 - Priority levels: Normal, Urgent (orange indicators)
@@ -108,7 +143,8 @@ Real-time workflow simulation to validate the entire operational engine:
 5. **assets.py** - Asset and maintenance management
 6. **setup.py** - Admin setup modules
 7. **data_seeder.py** - Quick data setup for operational testing
-8. **simulation.py** - Operational workflow simulation engine (NEW)
+8. **simulation.py** - Operational workflow simulation engine
+9. **dashboards.py** - Admin operational dashboards API (NEW)
 
 ### Frontend Pages
 1. **LoginPage** - Phone-based authentication with "Keep me signed in"
@@ -124,7 +160,8 @@ Real-time workflow simulation to validate the entire operational engine:
 11. **SystemTestPage** - Guided end-to-end test workflow
 12. **ProfilePage** - User profile with admin actions
 13. **DataSeedPage** - Quick data setup interface
-14. **SimulationPage** - Operational workflow simulation dashboard (NEW)
+14. **SimulationPage** - Operational workflow simulation dashboard
+15. **AdminDashboardPage** - Real-time operational dashboards (NEW)
 
 ### Frontend Components
 1. **BottomNav** - Fixed bottom navigation bar
@@ -145,6 +182,7 @@ Real-time workflow simulation to validate the entire operational engine:
 - [x] Profile Page
 - [x] Data Seeding Module
 - [x] Operational Workflow Simulation (March 15, 2026)
+- [x] Admin Operational Dashboards (March 15, 2026) - NEW
 
 ## P1 (Important) - Backlog
 - [ ] PDF report generation
@@ -189,6 +227,7 @@ Real-time workflow simulation to validate the entire operational engine:
 ### Hidden Pages (no bottom nav)
 - /login
 - /admin
+- /admin-dashboard
 - /reports
 - /create-order
 - /create-return
@@ -198,7 +237,20 @@ Real-time workflow simulation to validate the entire operational engine:
 
 ## API Endpoints Summary
 
-### Operational Simulation (NEW)
+### Admin Operational Dashboards (NEW)
+- `GET /api/dashboards/main` - Main dashboard with order/patient metrics
+- `GET /api/dashboards/main?date_filter=X&department_id=Y` - With filters
+- `GET /api/dashboards/department-workload` - Department workload statistics
+- `GET /api/dashboards/patients` - Active IPD patients list
+- `GET /api/dashboards/patients?search=X` - Search patients
+- `GET /api/dashboards/patients/{ipd_id}/orders` - Patient orders with billing
+- `GET /api/dashboards/billing` - Billing summary with breakdowns
+- `GET /api/dashboards/billing?from_date=X&to_date=Y` - Date range filter
+- `GET /api/dashboards/billing/export?format=csv` - Export billing CSV
+- `GET /api/dashboards/department-workload/export?format=csv` - Export dept CSV
+- `GET /api/dashboards/patients/export?format=csv` - Export patient CSV
+
+### Operational Simulation
 - `GET /api/simulation/metrics` - Get live operational metrics
 - `GET /api/simulation/summary` - Get comprehensive simulation summary
 - `POST /api/simulation/scenario/patient-admission` - Run patient admission scenario
