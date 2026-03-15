@@ -7,11 +7,13 @@ import { Toaster } from '@/components/ui/sonner';
 import LoginPage from './pages/LoginPage';
 import DashboardPage from './pages/DashboardPage';
 import CreateOrderPage from './pages/CreateOrderPage';
+import CreateReturnPage from './pages/CreateReturnPage';
 import OrdersPage from './pages/OrdersPage';
 import OrderDetailPage from './pages/OrderDetailPage';
 import DispatchPage from './pages/DispatchPage';
 import ReceivePage from './pages/ReceivePage';
 import AdminPage from './pages/AdminPage';
+import ReportsPage from './pages/ReportsPage';
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
@@ -121,6 +123,22 @@ function AppRoutes() {
         element={
           <ProtectedRoute>
             <AdminPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/reports"
+        element={
+          <ProtectedRoute>
+            <ReportsPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/create-return"
+        element={
+          <ProtectedRoute>
+            <CreateReturnPage />
           </ProtectedRoute>
         }
       />

@@ -1085,6 +1085,16 @@ async def receive_item(
     
     await db.commit()
     
+    # Auto-generate billing if order is completed and has patient
+    if all_received and order.patient_id:
+        try:
+            from billing import create_billing_for_order
+            await create_billing_for_order(order.id, db, current_user.id)
+        except Exception as e:
+            # Log error but don't fail the receive
+            import logging
+            logging.error(f"Failed to create billing for order {order.id}: {e}")
+    
     result = await db.execute(
         select(DispatchEvent)
         .options(

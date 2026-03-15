@@ -7,7 +7,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { 
   Plus, Package, CheckCircle2, Clock, TrendingUp,
-  AlertTriangle, ChevronRight, User, LogOut
+  AlertTriangle, ChevronRight, User, LogOut, RotateCcw, BarChart3
 } from 'lucide-react';
 
 const DashboardPage = () => {
@@ -100,6 +100,30 @@ const DashboardPage = () => {
               </Badge>
             )}
           </Button>
+        </section>
+
+        {/* Secondary Actions */}
+        <section className="grid grid-cols-2 gap-3">
+          <Button
+            onClick={() => navigate('/create-return')}
+            variant="outline"
+            className="h-auto py-3 flex-col gap-1 touch-btn"
+            data-testid="create-return-btn"
+          >
+            <RotateCcw className="w-5 h-5" />
+            <span className="text-sm">Return Order</span>
+          </Button>
+          {isAdmin && (
+            <Button
+              onClick={() => navigate('/reports')}
+              variant="outline"
+              className="h-auto py-3 flex-col gap-1 touch-btn"
+              data-testid="reports-btn"
+            >
+              <BarChart3 className="w-5 h-5" />
+              <span className="text-sm">Reports</span>
+            </Button>
+          )}
         </section>
 
         {/* Stats */}

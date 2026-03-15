@@ -197,6 +197,8 @@ class IPDPhaseLog(Base):
     changed_at = Column(DateTime(timezone=True), server_default=func.now())
     changed_by = Column(Integer, ForeignKey("users.id"))
     notes = Column(Text)
+    
+    ipd = relationship("IPD", backref="phase_logs")
 
 
 class Vendor(Base):
@@ -302,6 +304,7 @@ class Order(Base):
     creator = relationship("User", foreign_keys=[created_by])
     items = relationship("OrderItem", back_populates="order", cascade="all, delete-orphan")
     original_order = relationship("Order", remote_side=[id])
+    billing = relationship("Billing", back_populates="order", uselist=False)
 
 
 class OrderItem(Base):
@@ -365,6 +368,9 @@ class Billing(Base):
     payment_reference = Column(String(100))
     generated_at = Column(DateTime(timezone=True), server_default=func.now())
     generated_by = Column(Integer, ForeignKey("users.id"))
+    
+    # Relationships
+    order = relationship("Order", back_populates="billing")
 
 
 class BillingItem(Base):
@@ -401,6 +407,35 @@ class Asset(Base):
     created_by = Column(Integer)
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
     updated_by = Column(Integer)
+
+
+class AssetAssignment(Base):
+    __tablename__ = "asset_assignments"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    asset_id = Column(Integer, ForeignKey("assets.id"), nullable=False)
+    assigned_to_user_id = Column(Integer, ForeignKey("users.id"))
+    assigned_to_department_id = Column(Integer, ForeignKey("departments.id"))
+    assigned_at = Column(DateTime(timezone=True), server_default=func.now())
+    assigned_by = Column(Integer, ForeignKey("users.id"))
+    returned_at = Column(DateTime(timezone=True))
+    returned_by = Column(Integer, ForeignKey("users.id"))
+    notes = Column(Text)
+
+
+class AssetMaintenance(Base):
+    __tablename__ = "asset_maintenance"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    asset_id = Column(Integer, ForeignKey("assets.id"), nullable=False)
+    maintenance_type = Column(String(50))
+    description = Column(Text)
+    cost = Column(Numeric(12, 2))
+    performed_by = Column(String(100))
+    performed_at = Column(Date)
+    next_maintenance_date = Column(Date)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    created_by = Column(Integer, ForeignKey("users.id"))
 
 
 class Shift(Base):

@@ -11,6 +11,10 @@ load_dotenv(ROOT_DIR / '.env')
 
 from database import init_db
 from routes import router as api_router
+from billing import router as billing_router
+from reports import router as reports_router
+from patient_workflow import router as patient_workflow_router
+from assets import router as assets_router
 
 # Configure logging
 logging.basicConfig(
@@ -49,6 +53,10 @@ app.add_middleware(
 
 # Include routes
 app.include_router(api_router, prefix="/api")
+app.include_router(billing_router, prefix="/api")
+app.include_router(reports_router, prefix="/api")
+app.include_router(patient_workflow_router, prefix="/api")
+app.include_router(assets_router, prefix="/api")
 
 
 @app.get("/")

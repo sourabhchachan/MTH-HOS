@@ -271,6 +271,142 @@ class MTHBackendTester:
                 403,  # Should be forbidden
                 token=self.ward_token
             )
+            
+    def test_billing_endpoints(self):
+        """Test billing engine endpoints"""
+        print("\n" + "="*50)
+        print("TESTING BILLING ENGINE")
+        print("="*50)
+        
+        if self.admin_token:
+            # List billing records
+            self.run_test(
+                "List Billing Records",
+                "GET",
+                "billing",
+                200,
+                token=self.admin_token
+            )
+            
+            # Get billing summary
+            self.run_test(
+                "Billing Summary Stats",
+                "GET",
+                "billing/summary/stats",
+                200,
+                token=self.admin_token
+            )
+
+    def test_reports_endpoints(self):
+        """Test admin reports framework"""
+        print("\n" + "="*50)
+        print("TESTING ADMIN REPORTS")
+        print("="*50)
+        
+        if self.admin_token:
+            # Admin dashboard report
+            self.run_test(
+                "Admin Dashboard Report",
+                "GET",
+                "reports/admin-dashboard",
+                200,
+                token=self.admin_token
+            )
+            
+            # Orders operational report
+            self.run_test(
+                "Orders Operational Report",
+                "GET",
+                "reports/operational/orders",
+                200,
+                token=self.admin_token
+            )
+            
+            # Financial billing report
+            self.run_test(
+                "Financial Billing Report",
+                "GET",
+                "reports/financial/billing",
+                200,
+                token=self.admin_token
+            )
+            
+            # Pending orders report
+            self.run_test(
+                "Pending Orders Report",
+                "GET",
+                "reports/operational/pending-orders",
+                200,
+                token=self.admin_token
+            )
+            
+            # Operational insights
+            self.run_test(
+                "Operational Insights",
+                "GET",
+                "reports/insights",
+                200,
+                token=self.admin_token
+            )
+
+    def test_patient_workflow_endpoints(self):
+        """Test patient workflow and pre-admission"""
+        print("\n" + "="*50)
+        print("TESTING PATIENT WORKFLOW")
+        print("="*50)
+        
+        if self.ward_token:
+            # Get workflow phase stats
+            success, response = self.run_test(
+                "Workflow Phase Stats",
+                "GET",
+                "patient-workflow/stats",
+                200,
+                token=self.admin_token  # Needs admin access
+            )
+            
+            # Get patients by phase
+            self.run_test(
+                "Patients by Phase",
+                "GET",
+                "patient-workflow/patients",
+                200,
+                token=self.ward_token
+            )
+
+    def test_asset_management_endpoints(self):
+        """Test asset management automation"""
+        print("\n" + "="*50)
+        print("TESTING ASSET MANAGEMENT")
+        print("="*50)
+        
+        if self.admin_token:
+            # List assets
+            self.run_test(
+                "List Assets",
+                "GET",
+                "assets",
+                200,
+                token=self.admin_token
+            )
+            
+            # List maintenance records
+            self.run_test(
+                "Asset Maintenance Records",
+                "GET",
+                "assets/maintenance",
+                200,
+                token=self.admin_token
+            )
+            
+            # Get maintenance due
+            self.run_test(
+                "Assets Maintenance Due",
+                "GET",
+                "assets/maintenance-due",
+                200,
+                token=self.admin_token
+            )
 
     def run_all_tests(self):
         """Run all backend tests"""
@@ -287,6 +423,10 @@ class MTHBackendTester:
             self.test_orders()
             self.test_dispatch_receive()
             self.test_admin_endpoints()
+            self.test_billing_endpoints()
+            self.test_reports_endpoints()
+            self.test_patient_workflow_endpoints()
+            self.test_asset_management_endpoints()
             
         except KeyboardInterrupt:
             print("\n❌ Testing interrupted by user")
