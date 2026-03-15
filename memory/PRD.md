@@ -10,10 +10,10 @@ Order-driven hospital operating system where all hospital operations follow a un
 - **Authentication**: JWT with phone number login + "Keep me signed in" option
 - **Permissions**: Department-based (not role-based)
 
-## Branding & UI (Updated March 2026)
+## Branding & UI
 - **Application Name**: MTH (no slogan or tagline)
 - **Color Theme**: White background with Orange (#f97316) accents
-- **Primary Color**: Orange (buttons, active tabs, badges)
+- **Primary Color**: Orange (buttons, active tabs, badges, urgent indicators)
 - **Mobile-first design**: Large touch-friendly inputs and buttons
 
 ## User Personas
@@ -39,64 +39,64 @@ Order-driven hospital operating system where all hospital operations follow a un
 
 ## Core Requirements Implemented
 
-### Order System ✅
-- [x] Order creation with item selection
-- [x] Priority levels: Normal, Urgent (orange indicators)
-- [x] Patient IPD linkage (configurable per item)
-- [x] Auto-routing to dispatching department
-- [x] Order status tracking: Created → Partially Dispatched → Fully Dispatched → Completed / Cancelled
+### Bottom Navigation Bar ✅ (NEW - March 2026)
+- Fixed bottom navigation with 4 tabs: Home, Orders, Dispatch, Profile
+- Orange highlight for active tab
+- Touch-friendly tap targets (97.5x64px per button)
+- Hidden on admin/login/reports/create pages
+- pb-20 padding on all main pages
+
+### Profile Page ✅ (NEW - March 2026)
+- User info card (name, designation, badges)
+- Contact information (phone, email, employee code)
+- Department info (primary + secondary)
+- Admin Actions section for admin users
+- Sign Out button
 
 ### Authentication & Session ✅
-- [x] Phone-based JWT authentication
-- [x] "Keep me signed in" checkbox
-- [x] Session persistence (localStorage for persistent, sessionStorage for session-only)
-- [x] Secure token handling
+- Phone-based JWT authentication
+- "Keep me signed in" checkbox
+- Session persistence (localStorage for persistent, sessionStorage for session-only)
+- Secure token handling
 
 ### Admin Setup Modules ✅
-- [x] **Departments Setup**: Create/Edit/Activate/Deactivate departments
-- [x] **Users Setup**: Create/Edit/Activate/Deactivate users, reset passwords
-- [x] **Vendors Setup**: Create/Edit/Activate/Deactivate vendors
-- [x] **Item Master Setup**: 
-  - Full form with all configuration fields
-  - Bulk CSV upload with validation
-  - Downloadable CSV template
-  - Seed initial categories
-- [x] **Assets Setup**: Create/Edit assets with maintenance tracking
-- [x] **Patients Setup**: Create/Edit patients with search functionality
+- **Departments Setup**: Create/Edit/Activate/Deactivate
+- **Users Setup**: Create/Edit/Activate/Deactivate, reset passwords
+- **Vendors Setup**: Create/Edit/Activate/Deactivate
+- **Item Master Setup**: Full form + CSV bulk upload
+- **Assets Setup**: Create/Edit with maintenance tracking
+- **Patients Setup**: Create/Edit with search
 
-### System Test Workflow ✅ (NEW - March 2026)
-- [x] Guided 5-step wizard for admins
-- [x] Step 1: Create test patient
-- [x] Step 2: Create order for patient
-- [x] Step 3: Dispatch ordered item
-- [x] Step 4: Receive dispatched item
-- [x] Step 5: Verify completion and billing
-- [x] Progress indicators
-- [x] Reset functionality to run multiple tests
+### System Test Workflow ✅
+- Guided 5-step wizard for admins
+- Patient → Order → Dispatch → Receive → Complete
+
+### Order System ✅
+- Order creation with item selection
+- Priority levels: Normal, Urgent (orange indicators)
+- Patient IPD linkage (configurable per item)
+- Auto-routing to dispatching department
+- Order status tracking
 
 ### Return Order Workflow ✅
-- [x] Create return orders referencing original order
-- [x] Select items and quantities to return
-- [x] Return reason selection (configurable reasons)
-- [x] Same workflow: Create → Route → Dispatch → Receive → Complete
+- Create return orders referencing original order
+- Select items and quantities to return
+- Return reason selection
 
 ### Dispatch System ✅
-- [x] Department-specific dispatch queues
-- [x] Partial dispatch support with quantity tracking
-- [x] Dispatch event logging with user/time stamps
-- [x] Batch number and expiry tracking
+- Department-specific dispatch queues
+- Partial dispatch support
+- Dispatch event logging
 
 ### Receive System ✅
-- [x] Pending receive list for ordering departments
-- [x] Receipt confirmation with quantity validation
-- [x] Automatic order completion when all items received
+- Pending receive list
+- Receipt confirmation
+- Automatic order completion
 
 ### Billing Engine ✅
-- [x] Auto-generate billing on order completion
-- [x] Bill Amount = Dispatched Quantity × Item Cost
-- [x] Billing records include: Patient UHID, IPD, Order ID, Items, Quantities
-- [x] Cost visibility restricted to Admin and authorized users
-- [x] Payment tracking and status management
+- Auto-generate billing on order completion
+- Bill Amount = Dispatched Quantity × Item Cost
+- Cost visibility restricted
 
 ## What's Been Implemented
 
@@ -106,20 +106,24 @@ Order-driven hospital operating system where all hospital operations follow a un
 3. **reports.py** - Admin reports and insight engine
 4. **patient_workflow.py** - Phase tracking and pre-admission
 5. **assets.py** - Asset and maintenance management
-6. **setup.py** - Admin setup modules (Departments, Users, Vendors, Items CSV, Patients)
+6. **setup.py** - Admin setup modules
 
 ### Frontend Pages
 1. **LoginPage** - Phone-based authentication with "Keep me signed in"
-2. **DashboardPage** - User dashboard with MTH branding, orange buttons
+2. **DashboardPage** - User dashboard with MTH branding
 3. **CreateOrderPage** - Order creation with cart
 4. **CreateReturnPage** - Return order creation
 5. **DispatchPage** - Dispatch queue management
 6. **ReceivePage** - Receipt confirmation
 7. **OrdersPage** - Order list with status tabs
 8. **OrderDetailPage** - Detailed order view
-9. **AdminPage** - Comprehensive admin panel with 6 tabs
+9. **AdminPage** - Admin panel with 6 tabs
 10. **ReportsPage** - Admin reports and analytics
 11. **SystemTestPage** - Guided end-to-end test workflow
+12. **ProfilePage** - User profile with admin actions
+
+### Frontend Components
+1. **BottomNav** - Fixed bottom navigation bar
 
 ## P0 (Critical) - Completed ✅
 - [x] Order workflow
@@ -133,6 +137,8 @@ Order-driven hospital operating system where all hospital operations follow a un
 - [x] UI/Branding Update (MTH, white + orange theme)
 - [x] Session Persistence ("Keep me signed in")
 - [x] System Test Workflow
+- [x] Bottom Navigation Bar
+- [x] Profile Page
 
 ## P1 (Important) - Backlog
 - [ ] PDF report generation
@@ -156,10 +162,28 @@ Order-driven hospital operating system where all hospital operations follow a un
 | Pharmacist | 9876543212 | user123 |
 | Lab Tech | 9876543213 | user123 |
 
+## Navigation Structure
+
+### Bottom Navigation (4 tabs)
+| Tab | Path | Description |
+|-----|------|-------------|
+| Home | / | Dashboard with pending tasks, urgent orders, activity |
+| Orders | /orders | Order list with Active/Done/Cancelled tabs |
+| Dispatch | /dispatch | Dispatch queue for user's department |
+| Profile | /profile | User info, department, admin actions, logout |
+
+### Hidden Pages (no bottom nav)
+- /login
+- /admin
+- /reports
+- /create-order
+- /create-return
+- /system-test
+
 ## API Endpoints Summary
 
 ### Core Order Operations
-- `POST /api/orders` - Create order (regular or return)
+- `POST /api/orders` - Create order
 - `GET /api/orders` - List orders
 - `GET /api/orders/{id}` - Get order details
 - `PUT /api/orders/{id}/cancel` - Cancel order
@@ -170,33 +194,15 @@ Order-driven hospital operating system where all hospital operations follow a un
 - `GET /api/pending-receive` - Get pending receives
 - `POST /api/receive` - Receive item
 
-### Billing
-- `GET /api/billing` - List billing records
-- `GET /api/billing/{id}` - Get billing details
-- `GET /api/billing/summary/stats` - Billing summary
-- `PUT /api/billing/{id}/payment` - Record payment
-
-### Reports (Admin)
-- `GET /api/reports/admin-dashboard` - Admin dashboard
-- `GET /api/reports/operational/orders` - Orders report
-- `GET /api/reports/financial/billing` - Billing report
-- `GET /api/reports/insights` - Operational insights
-- `GET /api/reports/export/{type}` - Export to CSV
-
 ### Admin Setup
 - `GET /api/setup/departments/all` - List all departments
 - `GET /api/setup/vendors/all` - List all vendors
-- `PUT /api/setup/vendors/{id}` - Update vendor
-- `PUT /api/setup/vendors/{id}/toggle-active` - Toggle vendor status
-- `GET /api/setup/items/all` - List all items with full details
+- `GET /api/setup/items/all` - List all items
 - `GET /api/setup/items/csv-template` - Get CSV template
 - `POST /api/setup/items/csv-upload` - Upload items via CSV
-- `POST /api/setup/seed-categories` - Seed initial item categories
 - `GET /api/setup/users/all` - List all users
-- `PUT /api/setup/users/{id}/reset-password` - Reset user password
-- `GET /api/setup/patients` - List patients with search
+- `GET /api/setup/patients` - List patients
 - `POST /api/setup/patients` - Create patient
-- `PUT /api/setup/patients/{id}` - Update patient
 
 ## Theme Configuration
 ```css
@@ -206,33 +212,13 @@ Order-driven hospital operating system where all hospital operations follow a un
 --background: 0 0% 100%;         /* White */
 --foreground: 222 47% 11%;       /* Dark gray */
 
-/* Accent Colors */
---urgent: 24 100% 50%;           /* Bright orange for urgent items */
---success: 142 76% 36%;          /* Green */
---destructive: 0 84% 60%;        /* Red */
+/* Active Tab Highlight */
+text-orange-500                   /* Active nav tab color */
 ```
 
-## Item CSV Upload Template
-| Column | Description | Example |
-|--------|-------------|---------|
-| item_name | Item name | Paracetamol 500mg |
-| item_code | Unique code | MED001 |
-| category | Category name | Medicines |
-| dispatching_department_code | Department code | PHRM |
-| departments_allowed_to_order | ALL or comma-separated codes | ALL |
-| workflow_phase | Patient phase | IPD |
-| priority_requirement | MANDATORY or NON_MANDATORY | NON_MANDATORY |
-| patient_ipd_requirement | MANDATORY or NON_MANDATORY | NON_MANDATORY |
-| ipd_status_allowed | ACTIVE_ONLY, INACTIVE_ONLY, BOTH | BOTH |
-| cost | Unit cost | 2.50 |
-| vendor_code | Vendor code | VEND001 |
-| unit | Unit of measure | tablet |
-
-## Initial Item Categories
-- Medicines
-- Lab Tests
-- Radiology Tests
-- Consumables
-- Procedures
-- Maintenance Requests
-- Housekeeping Requests
+## Mobile Design Specifications
+- **Bottom Nav Height**: h-16 (64px)
+- **Nav Tap Targets**: 97.5x64px (exceeds 44px minimum)
+- **Page Bottom Padding**: pb-20 (80px for nav clearance)
+- **Input Height**: h-12 or h-14 for touch-friendly fields
+- **Button Height**: h-12 or h-14 for touch-friendly buttons
