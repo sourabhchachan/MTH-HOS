@@ -191,6 +191,47 @@ Full return management with billing adjustments:
 - GET /api/returns/billing/{id}/effective-amount - Calculate effective billing
 - GET /api/returns/orders - List return orders
 
+### Billing Engine Enhancements ✅ (Complete - March 15, 2026)
+Full payment management with partial payment support and invoice generation:
+
+**Payment Recording:**
+- Record payments from Billing Dashboard or Patient Billing View
+- Payment modes: Cash, Card, UPI, Insurance, Other
+- Multiple payments per billing (partial payment support)
+- Each payment creates separate record (billing never modified)
+
+**Payment History:**
+- Full payment history per billing
+- Payment timestamps, mode, reference number
+- User who recorded payment
+- Total paid vs outstanding calculation
+
+**Partial Payment Support:**
+- Example: Total ₹10,000 → Pay ₹4,000 → Pay ₹3,000 → Outstanding ₹3,000
+- Status: GENERATED → PARTIAL → PAID
+
+**PDF Invoice Generation:**
+- Download Invoice button on each billing
+- Contains: Hospital name (MTH), Invoice number, Patient info
+- Itemized list with quantities and amounts
+- Payment history section
+- Outstanding balance
+
+**Admin Billing Dashboard:**
+- Today's Billing (count + amount)
+- Payments Received Today (count + amount)
+- Outstanding Billing (count + amount)
+- Department-wise billing breakdown
+
+**API Endpoints:**
+- GET /api/billing - List billings with payment history
+- GET /api/billing/{id} - Get billing details
+- POST /api/billing/payments - Record new payment
+- GET /api/billing/{id}/payments - Get payment history
+- GET /api/billing/{id}/summary - Get payment summary
+- GET /api/billing/{id}/invoice - Generate HTML invoice
+- GET /api/billing/dashboard/today - Get today's stats
+
 ### Dispatch System ✅
 - Department-specific dispatch queues
 - Partial dispatch support
@@ -243,6 +284,7 @@ Full return management with billing adjustments:
 - [x] Order workflow
 - [x] Return order workflow (Full billing adjustment support - March 15, 2026)
 - [x] Billing engine
+- [x] Billing Engine Enhancements (Payment Recording, PDF Invoices - March 15, 2026) - NEW
 - [x] Admin reports
 - [x] Patient workflow phases
 - [x] Pre-admission process
@@ -258,22 +300,21 @@ Full return management with billing adjustments:
 - [x] Admin Operational Dashboards (March 15, 2026)
 - [x] Drill-Down Navigation (March 15, 2026)
 - [x] Quick Action Buttons (March 15, 2026)
-- [x] Return Order Workflow with Billing Adjustments (March 15, 2026) - NEW
+- [x] Return Order Workflow with Billing Adjustments (March 15, 2026)
 
 ## P1 (Important) - Backlog
-- [ ] Billing Engine Enhancements: Payment Recording, PDF Invoice Generation
-- [ ] PDF report generation
+- [ ] Insight Engine (Admin Intelligence Dashboard) - Next Priority
+- [ ] PDF report generation (export to PDF)
 - [ ] Real-time notifications (WebSocket)
 - [ ] Attendance tracking module
 - [ ] Payroll integration
 
 ## P2 (Future) - Enhancements
-- [ ] Insight Engine (Admin Intelligence Dashboard)
 - [ ] Patient Workflow Phase Tracking automation
 - [ ] Asset Maintenance Automation
 - [ ] SMS/WhatsApp notifications
 - [ ] Biometric attendance integration
-- [ ] Payment gateway integration
+- [ ] Payment gateway integration (online payments)
 - [ ] Inventory stock management
 - [ ] Vendor reconciliation reports
 
