@@ -16,6 +16,7 @@ Order-driven hospital operating system where all hospital operations follow a un
 - Create orders for items (medicines, lab tests, consumables)
 - Receive dispatched items
 - Track order status
+- Create return orders
 
 ### Dispatching Staff (Pharmacy/Lab/Kitchen)
 - View dispatch queue with priority sorting
@@ -24,85 +25,119 @@ Order-driven hospital operating system where all hospital operations follow a un
 
 ### Admin
 - Manage departments, users, items, vendors
-- View cost information
+- View cost information and billing
+- Access operational and financial reports
 - Configure item permissions
+- Monitor insights and alerts
 
-## Core Requirements (Static)
+## Core Requirements Implemented
 
-### Order System
+### Order System ✅
 - [x] Order creation with item selection
 - [x] Priority levels: Normal, Urgent
 - [x] Patient IPD linkage (configurable per item)
 - [x] Auto-routing to dispatching department
-- [x] Order status: Created → Partially Dispatched → Fully Dispatched → Completed / Cancelled
+- [x] Order status tracking: Created → Partially Dispatched → Fully Dispatched → Completed / Cancelled
 
-### Dispatch System
+### Return Order Workflow ✅
+- [x] Create return orders referencing original order
+- [x] Select items and quantities to return
+- [x] Return reason selection (configurable reasons)
+- [x] Same workflow: Create → Route → Dispatch → Receive → Complete
+
+### Dispatch System ✅
 - [x] Department-specific dispatch queues
 - [x] Partial dispatch support with quantity tracking
 - [x] Dispatch event logging with user/time stamps
 - [x] Batch number and expiry tracking
 
-### Receive System
+### Receive System ✅
 - [x] Pending receive list for ordering departments
 - [x] Receipt confirmation with quantity validation
 - [x] Automatic order completion when all items received
 
-### Item Master
+### Billing Engine ✅
+- [x] Auto-generate billing on order completion
+- [x] Bill Amount = Dispatched Quantity × Item Cost
+- [x] Billing records include: Patient UHID, IPD, Order ID, Items, Quantities
+- [x] Cost visibility restricted to Admin and authorized users
+- [x] Payment tracking and status management
+
+### Item Master ✅
 - [x] Dispatching department configuration
 - [x] Departments allowed to order (configurable)
 - [x] Patient IPD requirement settings
 - [x] Priority requirement settings
 - [x] Vendor mapping
 - [x] Cost per unit (restricted visibility)
+- [x] Bulk upload via CSV template
 
-### User Management
+### Patient Workflow Phase Tracking ✅
+- [x] Six phases: Pre-Admission → Admission → IPD → Discharge → Post-Discharge → Archived
+- [x] Phase transition logging with timestamps
+- [x] Phase-wise patient analytics
+- [x] Days in phase tracking
+
+### Pre-Admission Process ✅
+- [x] Eligibility check order creation
+- [x] Patient admission workflow
+- [x] Auto IPD creation on eligibility check
+- [x] Phase transitions on admission completion
+
+### Admin Reporting Framework ✅
+- [x] Admin Dashboard with key metrics
+- [x] Operational Reports (orders, dispatch performance, pending)
+- [x] Financial Reports (billing, patient billing, vendor spend)
+- [x] Export to CSV
+- [x] Insight Engine with alerts
+
+### Asset Maintenance Automation ✅
+- [x] Asset CRUD operations
+- [x] Maintenance tracking with scheduling
+- [x] Next maintenance date tracking
+- [x] Auto maintenance order generation
+- [x] Asset assignment and return
+
+### User Management ✅
 - [x] Phone-based authentication
 - [x] Primary + secondary department membership
 - [x] Admin privileges
 - [x] Cost visibility permissions
 - [x] IPD reactivation permissions
 
-## What's Been Implemented (MVP - Jan 2026)
+## What's Been Implemented (Jan 2026)
 
-### Backend
-- FastAPI server with PostgreSQL
-- Complete database schema (18+ tables)
-- JWT authentication
-- All CRUD operations for entities
-- Order lifecycle management
-- Dispatch/receive workflow APIs
-- Department-based permission filtering
+### Backend Modules
+1. **routes.py** - Core order, dispatch, receive APIs
+2. **billing.py** - Billing engine with auto-generation
+3. **reports.py** - Admin reports and insight engine
+4. **patient_workflow.py** - Phase tracking and pre-admission
+5. **assets.py** - Asset and maintenance management
 
-### Frontend (React PWA)
-- Mobile-first design (dark theme)
-- Login page with phone authentication
-- Dashboard with stats and quick actions
-- Order creation with cart system
-- Dispatch queue with urgent highlighting
-- Receive confirmation flow
-- Order list with status tabs
-- Order detail with timeline
-- Admin panel (users, departments, items, vendors)
+### Frontend Pages
+1. **LoginPage** - Phone-based authentication
+2. **DashboardPage** - User dashboard with stats and quick actions
+3. **CreateOrderPage** - Order creation with cart
+4. **CreateReturnPage** - Return order creation
+5. **DispatchPage** - Dispatch queue management
+6. **ReceivePage** - Receipt confirmation
+7. **OrdersPage** - Order list with status tabs
+8. **OrderDetailPage** - Detailed order view
+9. **AdminPage** - Admin panel for entity management
+10. **ReportsPage** - Admin reports and analytics
 
-### Seed Data
-- 10 departments (Admin, Ward A/B, ICU, Emergency, Pharmacy, Lab, Radiology, OT, Kitchen)
-- 5 sample users with different roles
-- 9 sample items across categories
-- 3 vendors
-- 5 item categories
-- 6 return reasons
-- 2 sample patients with active IPD
-
-## P0 (Critical) - Next Priority
-- [ ] Return order creation flow (UI)
-- [ ] Billing generation on order completion
-- [ ] Item deactivation enforcement
+## P0 (Critical) - Completed ✅
+- [x] Return order workflow
+- [x] Billing engine
+- [x] Admin reports
+- [x] Patient workflow phases
+- [x] Pre-admission process
+- [x] Asset maintenance
 
 ## P1 (Important) - Backlog
-- [ ] IPD phase transition workflow
-- [ ] Analytics dashboard for admin
-- [ ] PDF bill generation
-- [ ] Attendance tracking
+- [ ] PDF report generation
+- [ ] Real-time notifications (WebSocket)
+- [ ] Attendance tracking module
 - [ ] Payroll integration
 
 ## P2 (Future) - Enhancements
@@ -122,12 +157,40 @@ Order-driven hospital operating system where all hospital operations follow a un
 | Lab Tech | 9876543213 | user123 |
 
 ## API Endpoints Summary
-- `POST /api/auth/login` - Phone login
-- `GET /api/auth/me` - Current user profile
-- `GET /api/dashboard` - User dashboard with stats
-- `GET /api/items/orderable` - Items user can order
-- `POST /api/orders` - Create order
-- `GET /api/dispatch-queue` - Pending dispatch items
+
+### Core Order Operations
+- `POST /api/orders` - Create order (regular or return)
+- `GET /api/orders` - List orders
+- `GET /api/orders/{id}` - Get order details
+- `PUT /api/orders/{id}/cancel` - Cancel order
+
+### Dispatch & Receive
+- `GET /api/dispatch-queue` - Get dispatch queue
 - `POST /api/dispatch` - Dispatch item
+- `GET /api/pending-receive` - Get pending receives
 - `POST /api/receive` - Receive item
-- Admin: departments, users, items, vendors CRUD
+
+### Billing
+- `GET /api/billing` - List billing records
+- `GET /api/billing/{id}` - Get billing details
+- `GET /api/billing/summary/stats` - Billing summary
+- `PUT /api/billing/{id}/payment` - Record payment
+
+### Reports (Admin)
+- `GET /api/reports/admin-dashboard` - Admin dashboard
+- `GET /api/reports/operational/orders` - Orders report
+- `GET /api/reports/financial/billing` - Billing report
+- `GET /api/reports/insights` - Operational insights
+- `GET /api/reports/export/{type}` - Export to CSV
+
+### Patient Workflow
+- `POST /api/pre-admission/eligibility-check` - Eligibility check
+- `POST /api/pre-admission/admit` - Admit patient
+- `POST /api/patient/{id}/transition-to-ipd` - Phase transition
+- `GET /api/patient-workflow/stats` - Phase statistics
+
+### Assets
+- `GET /api/assets` - List assets
+- `POST /api/assets` - Create asset
+- `GET /api/assets/maintenance-due` - Due maintenance
+- `POST /api/assets/maintenance` - Record maintenance
