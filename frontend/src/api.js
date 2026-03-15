@@ -2,6 +2,28 @@ import axios from 'axios';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
 
+// Token storage keys (matching AuthContext)
+const TOKEN_KEY = 'mth_token';
+const PERSIST_KEY = 'mth_persist';
+
+// Helper to get token from appropriate storage
+const getStoredToken = () => {
+  const persist = localStorage.getItem(PERSIST_KEY) === 'true';
+  if (persist) {
+    return localStorage.getItem(TOKEN_KEY);
+  }
+  return sessionStorage.getItem(TOKEN_KEY) || localStorage.getItem(TOKEN_KEY);
+};
+
+// Helper to clear tokens
+const clearTokens = () => {
+  localStorage.removeItem(TOKEN_KEY);
+  localStorage.removeItem('mth_user');
+  localStorage.removeItem(PERSIST_KEY);
+  sessionStorage.removeItem(TOKEN_KEY);
+  sessionStorage.removeItem('mth_user');
+};
+
 const api = axios.create({
   baseURL: `${API_URL}/api`,
   headers: {
@@ -12,7 +34,7 @@ const api = axios.create({
 // Request interceptor to add auth token
 api.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('token');
+    const token = getStoredToken();
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -26,8 +48,7 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
+      clearTokens();
       window.location.href = '/login';
     }
     return Promise.reject(error);

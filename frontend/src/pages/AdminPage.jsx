@@ -45,11 +45,11 @@ const AdminPage = () => {
 
   if (!isAdmin) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-4">
-        <Card className="w-full max-w-sm">
+      <div className="min-h-screen flex items-center justify-center p-4 bg-white">
+        <Card className="w-full max-w-sm border-gray-200">
           <CardContent className="p-6 text-center">
-            <p className="text-muted-foreground">Admin access required</p>
-            <Button className="mt-4" onClick={() => navigate('/')}>Go Back</Button>
+            <p className="text-gray-500">Admin access required</p>
+            <Button className="mt-4 bg-orange-500 hover:bg-orange-600" onClick={() => navigate('/')}>Go Back</Button>
           </CardContent>
         </Card>
       </div>
@@ -57,38 +57,39 @@ const AdminPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background pb-6 safe-area-top">
-      <header className="sticky top-0 z-40 bg-background/95 backdrop-blur border-b border-border px-4 py-3">
+    <div className="min-h-screen bg-white pb-6 safe-area-top">
+      <header className="sticky top-0 z-40 bg-white border-b border-gray-100 px-4 py-3">
         <div className="flex items-center gap-3">
-          <Button variant="ghost" size="icon" onClick={() => navigate('/')}>
+          <Button variant="ghost" size="icon" onClick={() => navigate('/')} className="text-gray-600 hover:text-orange-500 hover:bg-orange-50">
             <ArrowLeft className="w-5 h-5" />
           </Button>
           <div className="flex items-center gap-2">
-            <Settings className="w-5 h-5 text-primary" />
-            <h1 className="font-semibold text-lg">Admin Setup</h1>
+            <h1 className="text-xl font-bold text-orange-500">MTH</h1>
+            <span className="text-gray-300">|</span>
+            <span className="font-semibold text-gray-700">Admin Setup</span>
           </div>
         </div>
       </header>
 
       <main className="px-4 py-4">
         <Tabs value={tab} onValueChange={setTab} className="w-full">
-          <TabsList className="w-full grid grid-cols-6 mb-4">
-            <TabsTrigger value="departments" className="text-xs px-1">
+          <TabsList className="w-full grid grid-cols-6 mb-4 bg-gray-100">
+            <TabsTrigger value="departments" className="text-xs px-1 data-[state=active]:bg-orange-500 data-[state=active]:text-white">
               <Building2 className="w-4 h-4" />
             </TabsTrigger>
-            <TabsTrigger value="users" className="text-xs px-1">
+            <TabsTrigger value="users" className="text-xs px-1 data-[state=active]:bg-orange-500 data-[state=active]:text-white">
               <Users className="w-4 h-4" />
             </TabsTrigger>
-            <TabsTrigger value="vendors" className="text-xs px-1">
+            <TabsTrigger value="vendors" className="text-xs px-1 data-[state=active]:bg-orange-500 data-[state=active]:text-white">
               <Truck className="w-4 h-4" />
             </TabsTrigger>
-            <TabsTrigger value="items" className="text-xs px-1">
+            <TabsTrigger value="items" className="text-xs px-1 data-[state=active]:bg-orange-500 data-[state=active]:text-white">
               <Package className="w-4 h-4" />
             </TabsTrigger>
-            <TabsTrigger value="assets" className="text-xs px-1">
+            <TabsTrigger value="assets" className="text-xs px-1 data-[state=active]:bg-orange-500 data-[state=active]:text-white">
               <Wrench className="w-4 h-4" />
             </TabsTrigger>
-            <TabsTrigger value="patients" className="text-xs px-1">
+            <TabsTrigger value="patients" className="text-xs px-1 data-[state=active]:bg-orange-500 data-[state=active]:text-white">
               <UserPlus className="w-4 h-4" />
             </TabsTrigger>
           </TabsList>

@@ -1,6 +1,6 @@
 {
-  "short_name": "MTH Hospital",
-  "name": "MTH Hospital Operations System",
+  "short_name": "MTH",
+  "name": "MTH",
   "icons": [
     {
       "src": "favicon.ico",
@@ -22,7 +22,7 @@
   ],
   "start_url": ".",
   "display": "standalone",
-  "theme_color": "#0f766e",
-  "background_color": "#0f172a",
+  "theme_color": "#f97316",
+  "background_color": "#ffffff",
   "orientation": "portrait-primary"
 }

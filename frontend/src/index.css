@@ -57,28 +57,31 @@ body {
 
 @layer base {
   :root {
-    --background: 222 47% 6%;
-    --foreground: 210 40% 98%;
-    --card: 222 47% 8%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222 47% 8%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 168 76% 42%;
-    --primary-foreground: 222 47% 6%;
-    --secondary: 222 47% 14%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 222 47% 14%;
-    --muted-foreground: 215 20% 55%;
-    --accent: 168 76% 42%;
-    --accent-foreground: 222 47% 6%;
+    /* Light theme with white background and orange accents */
+    --background: 0 0% 100%;
+    --foreground: 222 47% 11%;
+    --card: 0 0% 98%;
+    --card-foreground: 222 47% 11%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 11%;
+    --primary: 24 95% 53%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 220 14% 96%;
+    --secondary-foreground: 222 47% 11%;
+    --muted: 220 14% 96%;
+    --muted-foreground: 220 9% 46%;
+    --accent: 24 95% 53%;
+    --accent-foreground: 0 0% 100%;
     --destructive: 0 84% 60%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 222 47% 18%;
-    --input: 222 47% 18%;
-    --ring: 168 76% 42%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 220 13% 91%;
+    --input: 220 13% 91%;
+    --ring: 24 95% 53%;
     --radius: 0.75rem;
     
-    --urgent: 38 92% 50%;
+    /* Custom colors */
+    --urgent: 24 100% 50%;
+    --urgent-strong: 17 100% 47%;
     --success: 142 76% 36%;
     --warning: 38 92% 50%;
     --info: 199 89% 48%;
@@ -99,18 +102,22 @@ body {
 /* Urgent highlight animation */
 @keyframes urgent-pulse {
   0%, 100% { opacity: 1; }
-  50% { opacity: 0.7; }
+  50% { opacity: 0.8; }
 }
 
 .urgent-pulse {
   animation: urgent-pulse 1.5s ease-in-out infinite;
 }
 
-/* Status badges */
-.status-pending { @apply bg-amber-500/20 text-amber-400 border-amber-500/30; }
-.status-dispatched { @apply bg-blue-500/20 text-blue-400 border-blue-500/30; }
-.status-completed { @apply bg-emerald-500/20 text-emerald-400 border-emerald-500/30; }
-.status-cancelled { @apply bg-red-500/20 text-red-400 border-red-500/30; }
+/* Status badges - Light theme */
+.status-pending { @apply bg-amber-100 text-amber-700 border-amber-200; }
+.status-dispatched { @apply bg-blue-100 text-blue-700 border-blue-200; }
+.status-completed { @apply bg-emerald-100 text-emerald-700 border-emerald-200; }
+.status-cancelled { @apply bg-red-100 text-red-700 border-red-200; }
+
+/* Priority indicators */
+.priority-urgent { @apply bg-orange-100 text-orange-700 border-orange-300; }
+.priority-normal { @apply bg-slate-100 text-slate-700 border-slate-200; }
 
 /* Loading skeleton */
 .skeleton {
@@ -119,7 +126,7 @@ body {
 
 /* Card hover effect */
 .card-interactive {
-  @apply transition-all duration-200 hover:bg-secondary/50 active:bg-secondary/70;
+  @apply transition-all duration-200 hover:bg-secondary/70 active:bg-secondary;
 }
 
 /* Bottom navigation safe area */
@@ -127,7 +134,17 @@ body {
   padding-bottom: max(env(safe-area-inset-bottom), 8px);
 }
 
-/* Input focus ring */
+/* Input focus ring - Orange */
 input:focus, select:focus, textarea:focus {
   @apply outline-none ring-2 ring-primary/50;
+}
+
+/* Orange accent highlights */
+.accent-border {
+  @apply border-l-4 border-l-primary;
+}
+
+/* Tab active state */
+[data-state="active"] {
+  @apply text-primary border-b-primary;
 }

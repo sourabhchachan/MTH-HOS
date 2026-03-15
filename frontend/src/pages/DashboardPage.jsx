@@ -7,7 +7,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { 
   Plus, Package, CheckCircle2, Clock, TrendingUp,
-  AlertTriangle, ChevronRight, User, LogOut, RotateCcw, BarChart3
+  AlertTriangle, ChevronRight, User, LogOut, RotateCcw, BarChart3, Settings
 } from 'lucide-react';
 
 const DashboardPage = () => {
@@ -33,8 +33,8 @@ const DashboardPage = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin w-8 h-8 border-2 border-primary border-t-transparent rounded-full" />
+      <div className="min-h-screen flex items-center justify-center bg-white">
+        <div className="animate-spin w-8 h-8 border-2 border-orange-500 border-t-transparent rounded-full" />
       </div>
     );
   }
@@ -44,29 +44,46 @@ const DashboardPage = () => {
   const pendingReceive = dashboard?.pending_receive_items || [];
 
   return (
-    <div className="min-h-screen bg-background pb-24 safe-area-top">
+    <div className="min-h-screen bg-white pb-24 safe-area-top">
       {/* Header */}
-      <header className="sticky top-0 z-40 bg-background/95 backdrop-blur border-b border-border px-4 py-3">
+      <header className="sticky top-0 z-40 bg-white border-b border-gray-100 px-4 py-3">
         <div className="flex items-center justify-between">
-          <div>
-            <h1 className="font-semibold text-lg">Welcome back</h1>
-            <p className="text-sm text-muted-foreground">{user?.name}</p>
+          <div className="flex items-center gap-3">
+            <h1 className="text-2xl font-bold text-orange-500">MTH</h1>
+            <div className="h-6 w-px bg-gray-200" />
+            <div>
+              <p className="text-sm font-medium text-gray-900">{user?.name}</p>
+              <p className="text-xs text-gray-500">{user?.primary_department?.name || 'Staff'}</p>
+            </div>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1">
             {isAdmin && (
-              <Button 
-                variant="ghost" 
-                size="icon"
-                onClick={() => navigate('/admin')}
-                data-testid="admin-btn"
-              >
-                <User className="w-5 h-5" />
-              </Button>
+              <>
+                <Button 
+                  variant="ghost" 
+                  size="icon"
+                  onClick={() => navigate('/admin')}
+                  className="text-gray-600 hover:text-orange-500 hover:bg-orange-50"
+                  data-testid="admin-btn"
+                >
+                  <Settings className="w-5 h-5" />
+                </Button>
+                <Button 
+                  variant="ghost" 
+                  size="icon"
+                  onClick={() => navigate('/reports')}
+                  className="text-gray-600 hover:text-orange-500 hover:bg-orange-50"
+                  data-testid="reports-btn"
+                >
+                  <BarChart3 className="w-5 h-5" />
+                </Button>
+              </>
             )}
             <Button 
               variant="ghost" 
               size="icon"
               onClick={logout}
+              className="text-gray-600 hover:text-red-500 hover:bg-red-50"
               data-testid="logout-btn"
             >
               <LogOut className="w-5 h-5" />
@@ -80,7 +97,7 @@ const DashboardPage = () => {
         <section className="grid grid-cols-2 gap-3">
           <Button
             onClick={() => navigate('/create-order')}
-            className="h-auto py-4 flex-col gap-2 touch-btn"
+            className="h-auto py-4 flex-col gap-2 touch-btn bg-orange-500 hover:bg-orange-600 text-white"
             data-testid="create-order-btn"
           >
             <Plus className="w-6 h-6" />
@@ -88,14 +105,14 @@ const DashboardPage = () => {
           </Button>
           <Button
             onClick={() => navigate('/dispatch')}
-            variant="secondary"
-            className="h-auto py-4 flex-col gap-2 touch-btn relative"
+            variant="outline"
+            className="h-auto py-4 flex-col gap-2 touch-btn relative border-gray-200 text-gray-700 hover:border-orange-300 hover:bg-orange-50"
             data-testid="dispatch-queue-btn"
           >
             <Package className="w-6 h-6" />
             <span className="font-semibold">Dispatch Queue</span>
             {stats.pending_dispatch_count > 0 && (
-              <Badge className="absolute -top-1 -right-1 bg-amber-500 text-black">
+              <Badge className="absolute -top-1 -right-1 bg-orange-500 text-white">
                 {stats.pending_dispatch_count}
               </Badge>
             )}
@@ -107,49 +124,52 @@ const DashboardPage = () => {
           <Button
             onClick={() => navigate('/create-return')}
             variant="outline"
-            className="h-auto py-3 flex-col gap-1 touch-btn"
+            className="h-auto py-3 flex-col gap-1 touch-btn border-gray-200 text-gray-700 hover:border-orange-300 hover:bg-orange-50"
             data-testid="create-return-btn"
           >
             <RotateCcw className="w-5 h-5" />
             <span className="text-sm">Return Order</span>
           </Button>
-          {isAdmin && (
-            <Button
-              onClick={() => navigate('/reports')}
-              variant="outline"
-              className="h-auto py-3 flex-col gap-1 touch-btn"
-              data-testid="reports-btn"
-            >
-              <BarChart3 className="w-5 h-5" />
-              <span className="text-sm">Reports</span>
-            </Button>
-          )}
+          <Button
+            onClick={() => navigate('/receive')}
+            variant="outline"
+            className="h-auto py-3 flex-col gap-1 touch-btn relative border-gray-200 text-gray-700 hover:border-orange-300 hover:bg-orange-50"
+            data-testid="receive-btn"
+          >
+            <CheckCircle2 className="w-5 h-5" />
+            <span className="text-sm">Receive Items</span>
+            {stats.pending_receive_count > 0 && (
+              <Badge className="absolute -top-1 -right-1 bg-orange-500 text-white text-xs">
+                {stats.pending_receive_count}
+              </Badge>
+            )}
+          </Button>
         </section>
 
         {/* Stats */}
         <section className="grid grid-cols-2 gap-3">
-          <Card className="bg-card/50">
+          <Card className="bg-gray-50 border-gray-100">
             <CardContent className="p-4">
               <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-amber-500/10">
-                  <Clock className="w-5 h-5 text-amber-500" />
+                <div className="p-2 rounded-lg bg-orange-100">
+                  <Clock className="w-5 h-5 text-orange-500" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold">{stats.pending_receive_count || 0}</p>
-                  <p className="text-xs text-muted-foreground">Pending Receive</p>
+                  <p className="text-2xl font-bold text-gray-900">{stats.pending_receive_count || 0}</p>
+                  <p className="text-xs text-gray-500">Pending Receive</p>
                 </div>
               </div>
             </CardContent>
           </Card>
-          <Card className="bg-card/50">
+          <Card className="bg-gray-50 border-gray-100">
             <CardContent className="p-4">
               <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-emerald-500/10">
-                  <CheckCircle2 className="w-5 h-5 text-emerald-500" />
+                <div className="p-2 rounded-lg bg-emerald-100">
+                  <CheckCircle2 className="w-5 h-5 text-emerald-600" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold">{stats.orders_completed_today || 0}</p>
-                  <p className="text-xs text-muted-foreground">Completed Today</p>
+                  <p className="text-2xl font-bold text-gray-900">{stats.orders_completed_today || 0}</p>
+                  <p className="text-xs text-gray-500">Completed Today</p>
                 </div>
               </div>
             </CardContent>

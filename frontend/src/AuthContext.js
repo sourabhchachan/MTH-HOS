@@ -3,6 +3,42 @@ import { login as apiLogin, getMe } from './api';
 
 const AuthContext = createContext(null);
 
+// Storage key constants
+const TOKEN_KEY = 'mth_token';
+const USER_KEY = 'mth_user';
+const PERSIST_KEY = 'mth_persist';
+
+// Helper to get token from appropriate storage
+const getStoredToken = () => {
+  const persist = localStorage.getItem(PERSIST_KEY) === 'true';
+  if (persist) {
+    return localStorage.getItem(TOKEN_KEY);
+  }
+  return sessionStorage.getItem(TOKEN_KEY) || localStorage.getItem(TOKEN_KEY);
+};
+
+// Helper to store token
+const storeToken = (token, persist) => {
+  if (persist) {
+    localStorage.setItem(TOKEN_KEY, token);
+    localStorage.setItem(PERSIST_KEY, 'true');
+    sessionStorage.removeItem(TOKEN_KEY);
+  } else {
+    sessionStorage.setItem(TOKEN_KEY, token);
+    localStorage.removeItem(TOKEN_KEY);
+    localStorage.removeItem(PERSIST_KEY);
+  }
+};
+
+// Helper to clear tokens
+const clearTokens = () => {
+  localStorage.removeItem(TOKEN_KEY);
+  localStorage.removeItem(USER_KEY);
+  localStorage.removeItem(PERSIST_KEY);
+  sessionStorage.removeItem(TOKEN_KEY);
+  sessionStorage.removeItem(USER_KEY);
+};
+
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
@@ -16,7 +52,7 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   const checkAuth = useCallback(async () => {
-    const token = localStorage.getItem('token');
+    const token = getStoredToken();
     if (!token) {
       setLoading(false);
       return;
@@ -26,8 +62,7 @@ export const AuthProvider = ({ children }) => {
       const response = await getMe();
       setUser(response.data);
     } catch (error) {
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
+      clearTokens();
     } finally {
       setLoading(false);
     }
@@ -37,21 +72,25 @@ export const AuthProvider = ({ children }) => {
     checkAuth();
   }, [checkAuth]);
 
-  const login = async (phone, password) => {
+  const login = async (phone, password, rememberMe = false) => {
     const response = await apiLogin(phone, password);
     const { access_token } = response.data;
-    localStorage.setItem('token', access_token);
+    
+    // Store token based on "Keep me signed in" preference
+    storeToken(access_token, rememberMe);
     
     const userResponse = await getMe();
     setUser(userResponse.data);
-    localStorage.setItem('user', JSON.stringify(userResponse.data));
+    
+    // Store user data
+    const storage = rememberMe ? localStorage : sessionStorage;
+    storage.setItem(USER_KEY, JSON.stringify(userResponse.data));
     
     return userResponse.data;
   };
 
   const logout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
+    clearTokens();
     setUser(null);
   };
 
