@@ -1,13 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { getOrders } from '../api';
+import { getOrders, receiveItem } from '../api';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from '@/components/ui/dialog';
+import { toast } from 'sonner';
 import { 
   ArrowLeft, Package, RefreshCw, AlertTriangle,
-  Clock, CheckCircle2, XCircle, ChevronRight, User, X, Filter
+  Clock, CheckCircle2, XCircle, ChevronRight, User, X, Filter, PackageCheck
 } from 'lucide-react';
 
 const statusConfig = {
@@ -24,6 +32,11 @@ const OrdersPage = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [tab, setTab] = useState('active');
+  
+  // Quick Receive Modal State
+  const [receiveModalOpen, setReceiveModalOpen] = useState(false);
+  const [selectedOrderForReceive, setSelectedOrderForReceive] = useState(null);
+  const [receiving, setReceiving] = useState(false);
   
   // Get filter params from URL
   const statusFilter = searchParams.get('status');
@@ -61,6 +74,40 @@ const OrdersPage = () => {
 
   const clearFilters = () => {
     setSearchParams({});
+  };
+
+  // Quick Receive Handler
+  const handleQuickReceive = (order, e) => {
+    e.stopPropagation(); // Prevent card click
+    setSelectedOrderForReceive(order);
+    setReceiveModalOpen(true);
+  };
+
+  const confirmReceive = async () => {
+    if (!selectedOrderForReceive) return;
+    
+    setReceiving(true);
+    try {
+      // Receive all items for this order
+      const items = selectedOrderForReceive.items || [];
+      for (const item of items) {
+        if (item.quantity_dispatched > item.quantity_received) {
+          await receiveItem({
+            order_item_id: item.id,
+            quantity_received: item.quantity_dispatched - item.quantity_received
+          });
+        }
+      }
+      toast.success('Order received successfully!');
+      setReceiveModalOpen(false);
+      setSelectedOrderForReceive(null);
+      loadOrders(); // Refresh the list
+    } catch (error) {
+      console.error('Receive failed:', error);
+      toast.error('Failed to receive order');
+    } finally {
+      setReceiving(false);
+    }
   };
 
   // Apply filters to orders
@@ -154,7 +201,12 @@ const OrdersPage = () => {
                   <EmptyState message="No active orders" />
                 ) : (
                   activeOrders.map(order => (
-                    <OrderCard key={order.id} order={order} onClick={() => navigate(`/orders/${order.id}`)} />
+                    <OrderCard 
+                      key={order.id} 
+                      order={order} 
+                      onClick={() => navigate(`/orders/${order.id}`)} 
+                      onQuickReceive={order.status === 'FULLY_DISPATCHED' ? (e) => handleQuickReceive(order, e) : null}
+                    />
                   ))
                 )}
               </TabsContent>
@@ -182,15 +234,78 @@ const OrdersPage = () => {
           )}
         </Tabs>
       </main>
+
+      {/* Quick Receive Modal */}
+      <Dialog open={receiveModalOpen} onOpenChange={setReceiveModalOpen}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-lg">
+              <PackageCheck className="w-5 h-5 text-green-500" />
+              Confirm Receive
+            </DialogTitle>
+          </DialogHeader>
+          
+          {selectedOrderForReceive && (
+            <div className="space-y-4">
+              <div className="p-3 bg-gray-50 rounded-lg">
+                <p className="font-medium">{selectedOrderForReceive.order_number}</p>
+                {selectedOrderForReceive.patient && (
+                  <p className="text-sm text-gray-500">Patient: {selectedOrderForReceive.patient.name}</p>
+                )}
+              </div>
+              
+              <div className="space-y-2">
+                <p className="text-sm font-medium text-gray-700">Items to receive:</p>
+                {selectedOrderForReceive.items?.map((item, idx) => (
+                  <div key={idx} className="flex items-center justify-between p-2 bg-green-50 rounded text-sm">
+                    <span className="truncate flex-1">{item.item_name || `Item ${idx + 1}`}</span>
+                    <span className="font-semibold text-green-700">
+                      Qty: {item.quantity_dispatched - (item.quantity_received || 0)}
+                    </span>
+                  </div>
+                ))}
+              </div>
+              
+              <p className="text-sm text-gray-500 text-center">
+                Tap confirm to receive all dispatched items
+              </p>
+            </div>
+          )}
+          
+          <DialogFooter className="flex gap-2">
+            <Button 
+              variant="outline" 
+              onClick={() => setReceiveModalOpen(false)}
+              disabled={receiving}
+            >
+              Cancel
+            </Button>
+            <Button 
+              className="bg-green-500 hover:bg-green-600 flex-1"
+              onClick={confirmReceive}
+              disabled={receiving}
+              data-testid="confirm-receive-btn"
+            >
+              {receiving ? (
+                <RefreshCw className="w-4 h-4 animate-spin mr-2" />
+              ) : (
+                <PackageCheck className="w-4 h-4 mr-2" />
+              )}
+              Confirm Receive
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
 
-const OrderCard = ({ order, onClick }) => {
+const OrderCard = ({ order, onClick, onQuickReceive }) => {
   const config = statusConfig[order.status] || statusConfig.CREATED;
   const StatusIcon = config.icon;
   const isUrgent = order.priority === 'URGENT';
   const itemCount = order.items?.length || 0;
+  const showQuickReceive = order.status === 'FULLY_DISPATCHED' && onQuickReceive;
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -226,11 +341,25 @@ const OrderCard = ({ order, onClick }) => {
             )}
           </div>
           <div className="flex items-center gap-2">
-            <Badge className={`${config.class} border`}>
-              <StatusIcon className="w-3 h-3 mr-1" />
-              {config.label}
-            </Badge>
-            <ChevronRight className="w-5 h-5 text-muted-foreground" />
+            {showQuickReceive ? (
+              /* Quick Receive Button - Large Touch Target */
+              <Button 
+                className="h-14 w-24 bg-green-500 hover:bg-green-600 text-white font-semibold shadow-md flex flex-col items-center justify-center gap-0.5"
+                onClick={onQuickReceive}
+                data-testid={`quick-receive-btn-${order.id}`}
+              >
+                <PackageCheck className="w-5 h-5" />
+                <span className="text-xs">Receive</span>
+              </Button>
+            ) : (
+              <>
+                <Badge className={`${config.class} border`}>
+                  <StatusIcon className="w-3 h-3 mr-1" />
+                  {config.label}
+                </Badge>
+                <ChevronRight className="w-5 h-5 text-muted-foreground" />
+              </>
+            )}
           </div>
         </div>
       </CardContent>

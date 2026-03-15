@@ -310,18 +310,18 @@ const DispatchCard = ({ item, onDispatch, isUrgent = false }) => (
             </div>
           )}
           <div className="flex items-center gap-4 mt-2 text-sm">
-            <span>Qty: <strong>{item.quantity_pending}</strong> pending</span>
+            <span>Qty: <strong className="text-orange-600">{item.quantity_pending}</strong> pending</span>
             <span className="text-muted-foreground">of {item.quantity_requested}</span>
           </div>
         </div>
+        {/* Quick Action Button - Large Touch Target */}
         <Button 
-          size="sm" 
-          className="touch-btn"
+          className="h-14 w-24 bg-orange-500 hover:bg-orange-600 text-white font-semibold shadow-md flex flex-col items-center justify-center gap-0.5"
           onClick={onDispatch}
-          data-testid={`dispatch-btn-${item.order_item_id}`}
+          data-testid={`quick-dispatch-btn-${item.order_item_id}`}
         >
-          <Send className="w-4 h-4 mr-1" />
-          Dispatch
+          <Send className="w-5 h-5" />
+          <span className="text-xs">Dispatch</span>
         </Button>
       </div>
     </CardContent>

@@ -893,13 +893,14 @@ async def cancel_order(
 # ============ DISPATCH ROUTES ============
 @router.get("/dispatch-queue", response_model=List[DispatchQueueItem])
 async def get_dispatch_queue(
+    department_id: int = None,
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    """Get pending dispatch items for current user's departments"""
-    user_depts = get_user_departments(current_user)
+    """Get pending dispatch items for current user's departments (or all for admins)"""
     
-    result = await db.execute(
+    # Build base query
+    query = (
         select(OrderItem, Order, Item, Department, Patient, IPD)
         .join(Order, OrderItem.order_id == Order.id)
         .join(Item, OrderItem.item_id == Item.id)
@@ -907,14 +908,22 @@ async def get_dispatch_queue(
         .outerjoin(Patient, Order.patient_id == Patient.id)
         .outerjoin(IPD, Order.ipd_id == IPD.id)
         .where(
-            OrderItem.dispatching_department_id.in_(user_depts),
             OrderItem.status.in_([OrderItemStatus.PENDING_DISPATCH, OrderItemStatus.PARTIALLY_DISPATCHED])
         )
-        .order_by(
-            Order.priority.desc(),
-            Order.created_at.asc()
-        )
     )
+    
+    # Filter by department if specified
+    if department_id:
+        query = query.where(OrderItem.dispatching_department_id == department_id)
+    elif not current_user.is_admin:
+        # Non-admin users only see their departments
+        user_depts = get_user_departments(current_user)
+        query = query.where(OrderItem.dispatching_department_id.in_(user_depts))
+    # Admin without department filter sees all
+    
+    query = query.order_by(Order.priority.desc(), Order.created_at.asc())
+    
+    result = await db.execute(query)
     
     queue = []
     for row in result.all():
@@ -958,8 +967,8 @@ async def dispatch_item(
     if not order_item:
         raise HTTPException(status_code=404, detail="Order item not found")
     
-    # Check dispatch permission
-    if order_item.dispatching_department_id not in user_depts:
+    # Check dispatch permission (admin can dispatch any item)
+    if not current_user.is_admin and order_item.dispatching_department_id not in user_depts:
         raise HTTPException(status_code=403, detail="Not authorized to dispatch this item")
     
     # Validate quantity
