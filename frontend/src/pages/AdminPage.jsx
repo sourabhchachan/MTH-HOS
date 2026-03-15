@@ -35,7 +35,7 @@ import {
 } from '@/components/ui/select';
 import { 
   ArrowLeft, Users, Building2, Package, Truck, Wrench, UserPlus,
-  Plus, Settings, Edit2, Power, Upload, Download, Search, RefreshCw, Play, Database
+  Plus, Settings, Edit2, Power, Upload, Download, Search, RefreshCw, Play, Database, BarChart2
 } from 'lucide-react';
 
 const AdminPage = () => {
@@ -117,6 +117,26 @@ const AdminPage = () => {
               >
                 <Database className="w-4 h-4 mr-2" />
                 Seed Data
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Operational Dashboards */}
+        <Card className="border-green-200 bg-green-50 mt-4">
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="font-medium text-green-700">Operational Dashboards</p>
+                <p className="text-sm text-green-600">Real-time hospital operations, billing & patient views</p>
+              </div>
+              <Button 
+                onClick={() => navigate('/admin-dashboard')}
+                className="bg-green-600 hover:bg-green-700"
+                data-testid="admin-dashboard-btn"
+              >
+                <BarChart2 className="w-4 h-4 mr-2" />
+                View
               </Button>
             </div>
           </CardContent>

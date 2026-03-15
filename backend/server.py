@@ -18,6 +18,7 @@ from assets import router as assets_router
 from setup import router as setup_router
 from data_seeder import router as seeder_router
 from simulation import router as simulation_router
+from dashboards import router as dashboards_router
 
 # Configure logging
 logging.basicConfig(
@@ -63,6 +64,7 @@ app.include_router(assets_router, prefix="/api")
 app.include_router(setup_router, prefix="/api")
 app.include_router(seeder_router, prefix="/api")
 app.include_router(simulation_router, prefix="/api")
+app.include_router(dashboards_router, prefix="/api")
 
 
 @app.get("/")

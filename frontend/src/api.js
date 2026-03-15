@@ -174,4 +174,14 @@ export const runReturnOrderScenario = () => api.post('/simulation/scenario/retur
 export const runPartialDispatchScenario = () => api.post('/simulation/scenario/partial-dispatch');
 export const resetSimulationData = () => api.post('/simulation/reset');
 
+// ============ Admin Dashboard APIs ============
+export const getMainDashboard = (params) => api.get('/dashboards/main', { params });
+export const getDepartmentWorkload = (deptId) => api.get('/dashboards/department-workload', { params: { department_id: deptId } });
+export const getPatientDashboard = (params) => api.get('/dashboards/patients', { params });
+export const getPatientOrders = (ipdId) => api.get(`/dashboards/patients/${ipdId}/orders`);
+export const getBillingDashboard = (params) => api.get('/dashboards/billing', { params });
+export const exportBillingDashboard = (params) => api.get('/dashboards/billing/export', { params, responseType: 'blob' });
+export const exportDepartmentWorkload = () => api.get('/dashboards/department-workload/export', { params: { format: 'csv' }, responseType: 'blob' });
+export const exportPatientDashboard = (status) => api.get('/dashboards/patients/export', { params: { status, format: 'csv' }, responseType: 'blob' });
+
 export default api;
