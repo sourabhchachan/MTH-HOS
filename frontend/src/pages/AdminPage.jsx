@@ -35,7 +35,7 @@ import {
 } from '@/components/ui/select';
 import { 
   ArrowLeft, Users, Building2, Package, Truck, Wrench, UserPlus,
-  Plus, Settings, Edit2, Power, Upload, Download, Search, RefreshCw
+  Plus, Settings, Edit2, Power, Upload, Download, Search, RefreshCw, Play
 } from 'lucide-react';
 
 const AdminPage = () => {
@@ -101,6 +101,26 @@ const AdminPage = () => {
           <TabsContent value="assets"><AssetsTab /></TabsContent>
           <TabsContent value="patients"><PatientsTab /></TabsContent>
         </Tabs>
+
+        {/* System Test Button */}
+        <Card className="border-orange-200 bg-orange-50 mt-6">
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="font-medium text-orange-700">System Test Workflow</p>
+                <p className="text-sm text-orange-600">Run end-to-end test: Patient → Order → Dispatch → Receive</p>
+              </div>
+              <Button 
+                onClick={() => navigate('/system-test')}
+                className="bg-orange-500 hover:bg-orange-600"
+                data-testid="system-test-btn"
+              >
+                <Play className="w-4 h-4 mr-2" />
+                Run Test
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
       </main>
     </div>
   );

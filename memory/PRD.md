@@ -7,8 +7,14 @@ Order-driven hospital operating system where all hospital operations follow a un
 ## Tech Stack
 - **Backend**: FastAPI (Python) + PostgreSQL
 - **Frontend**: React PWA (Mobile-first)
-- **Authentication**: JWT with phone number login
+- **Authentication**: JWT with phone number login + "Keep me signed in" option
 - **Permissions**: Department-based (not role-based)
+
+## Branding & UI (Updated March 2026)
+- **Application Name**: MTH (no slogan or tagline)
+- **Color Theme**: White background with Orange (#f97316) accents
+- **Primary Color**: Orange (buttons, active tabs, badges)
+- **Mobile-first design**: Large touch-friendly inputs and buttons
 
 ## User Personas
 
@@ -28,16 +34,45 @@ Order-driven hospital operating system where all hospital operations follow a un
 - View cost information and billing
 - Access operational and financial reports
 - Configure item permissions
+- Run system test workflow
 - Monitor insights and alerts
 
 ## Core Requirements Implemented
 
 ### Order System ✅
 - [x] Order creation with item selection
-- [x] Priority levels: Normal, Urgent
+- [x] Priority levels: Normal, Urgent (orange indicators)
 - [x] Patient IPD linkage (configurable per item)
 - [x] Auto-routing to dispatching department
 - [x] Order status tracking: Created → Partially Dispatched → Fully Dispatched → Completed / Cancelled
+
+### Authentication & Session ✅
+- [x] Phone-based JWT authentication
+- [x] "Keep me signed in" checkbox
+- [x] Session persistence (localStorage for persistent, sessionStorage for session-only)
+- [x] Secure token handling
+
+### Admin Setup Modules ✅
+- [x] **Departments Setup**: Create/Edit/Activate/Deactivate departments
+- [x] **Users Setup**: Create/Edit/Activate/Deactivate users, reset passwords
+- [x] **Vendors Setup**: Create/Edit/Activate/Deactivate vendors
+- [x] **Item Master Setup**: 
+  - Full form with all configuration fields
+  - Bulk CSV upload with validation
+  - Downloadable CSV template
+  - Seed initial categories
+- [x] **Assets Setup**: Create/Edit assets with maintenance tracking
+- [x] **Patients Setup**: Create/Edit patients with search functionality
+
+### System Test Workflow ✅ (NEW - March 2026)
+- [x] Guided 5-step wizard for admins
+- [x] Step 1: Create test patient
+- [x] Step 2: Create order for patient
+- [x] Step 3: Dispatch ordered item
+- [x] Step 4: Receive dispatched item
+- [x] Step 5: Verify completion and billing
+- [x] Progress indicators
+- [x] Reset functionality to run multiple tests
 
 ### Return Order Workflow ✅
 - [x] Create return orders referencing original order
@@ -63,64 +98,7 @@ Order-driven hospital operating system where all hospital operations follow a un
 - [x] Cost visibility restricted to Admin and authorized users
 - [x] Payment tracking and status management
 
-### Admin Setup Modules ✅ (NEW - March 2026)
-- [x] **Departments Setup**: Create/Edit/Activate/Deactivate departments
-- [x] **Users Setup**: Create/Edit/Activate/Deactivate users, reset passwords
-- [x] **Vendors Setup**: Create/Edit/Activate/Deactivate vendors
-- [x] **Item Master Setup**: 
-  - Full form with all configuration fields
-  - Bulk CSV upload with validation
-  - Downloadable CSV template
-  - Seed initial categories
-- [x] **Assets Setup**: Create/Edit assets with maintenance tracking
-- [x] **Patients Setup**: Create/Edit patients with search functionality
-
-### Item Master Full Configuration ✅
-- [x] Dispatching department configuration
-- [x] Departments allowed to order (All or specific list)
-- [x] Patient IPD requirement settings (Mandatory/Non-Mandatory)
-- [x] IPD Status allowed (Active Only/Inactive Only/Both)
-- [x] Priority requirement settings
-- [x] Workflow phase configuration
-- [x] Vendor mapping
-- [x] Cost per unit (restricted visibility)
-- [x] Bulk upload via CSV template with validation
-
-### Patient Workflow Phase Tracking ✅
-- [x] Six phases: Pre-Admission → Admission → IPD → Discharge → Post-Discharge → Archived
-- [x] Phase transition logging with timestamps
-- [x] Phase-wise patient analytics
-- [x] Days in phase tracking
-
-### Pre-Admission Process ✅
-- [x] Eligibility check order creation
-- [x] Patient admission workflow
-- [x] Auto IPD creation on eligibility check
-- [x] Phase transitions on admission completion
-
-### Admin Reporting Framework ✅
-- [x] Admin Dashboard with key metrics
-- [x] Operational Reports (orders, dispatch performance, pending)
-- [x] Financial Reports (billing, patient billing, vendor spend)
-- [x] Export to CSV
-- [x] Insight Engine with alerts
-
-### Asset Maintenance Automation ✅
-- [x] Asset CRUD operations
-- [x] Maintenance tracking with scheduling
-- [x] Next maintenance date tracking
-- [x] Auto maintenance order generation
-- [x] Asset assignment and return
-
-### User Management ✅
-- [x] Phone-based authentication
-- [x] Primary + secondary department membership
-- [x] Admin privileges
-- [x] Cost visibility permissions
-- [x] IPD reactivation permissions
-- [x] Password reset by admin
-
-## What's Been Implemented (March 2026)
+## What's Been Implemented
 
 ### Backend Modules
 1. **routes.py** - Core order, dispatch, receive APIs
@@ -131,22 +109,17 @@ Order-driven hospital operating system where all hospital operations follow a un
 6. **setup.py** - Admin setup modules (Departments, Users, Vendors, Items CSV, Patients)
 
 ### Frontend Pages
-1. **LoginPage** - Phone-based authentication
-2. **DashboardPage** - User dashboard with stats and quick actions
+1. **LoginPage** - Phone-based authentication with "Keep me signed in"
+2. **DashboardPage** - User dashboard with MTH branding, orange buttons
 3. **CreateOrderPage** - Order creation with cart
 4. **CreateReturnPage** - Return order creation
 5. **DispatchPage** - Dispatch queue management
 6. **ReceivePage** - Receipt confirmation
 7. **OrdersPage** - Order list with status tabs
 8. **OrderDetailPage** - Detailed order view
-9. **AdminPage** - Comprehensive admin panel with 6 tabs:
-   - Departments (CRUD + toggle active)
-   - Users (CRUD + toggle active + password reset)
-   - Vendors (CRUD + toggle active)
-   - Item Master (CRUD + CSV upload + seed categories)
-   - Assets (CRUD with maintenance fields)
-   - Patients (CRUD with search)
+9. **AdminPage** - Comprehensive admin panel with 6 tabs
 10. **ReportsPage** - Admin reports and analytics
+11. **SystemTestPage** - Guided end-to-end test workflow
 
 ## P0 (Critical) - Completed ✅
 - [x] Order workflow
@@ -156,14 +129,16 @@ Order-driven hospital operating system where all hospital operations follow a un
 - [x] Patient workflow phases
 - [x] Pre-admission process
 - [x] Asset maintenance
-- [x] Admin Setup Modules (Departments, Users, Vendors, Items, Assets, Patients)
+- [x] Admin Setup Modules
+- [x] UI/Branding Update (MTH, white + orange theme)
+- [x] Session Persistence ("Keep me signed in")
+- [x] System Test Workflow
 
 ## P1 (Important) - Backlog
 - [ ] PDF report generation
 - [ ] Real-time notifications (WebSocket)
 - [ ] Attendance tracking module
 - [ ] Payroll integration
-- [ ] System Test Workflow (guided walkthrough for admins)
 
 ## P2 (Future) - Enhancements
 - [ ] SMS/WhatsApp notifications
@@ -208,13 +183,13 @@ Order-driven hospital operating system where all hospital operations follow a un
 - `GET /api/reports/insights` - Operational insights
 - `GET /api/reports/export/{type}` - Export to CSV
 
-### Admin Setup (NEW)
-- `GET /api/setup/departments/all` - List all departments (including inactive)
-- `GET /api/setup/vendors/all` - List all vendors (including inactive)
+### Admin Setup
+- `GET /api/setup/departments/all` - List all departments
+- `GET /api/setup/vendors/all` - List all vendors
 - `PUT /api/setup/vendors/{id}` - Update vendor
-- `PUT /api/setup/vendors/{id}/toggle-active` - Toggle vendor active status
+- `PUT /api/setup/vendors/{id}/toggle-active` - Toggle vendor status
 - `GET /api/setup/items/all` - List all items with full details
-- `GET /api/setup/items/csv-template` - Get CSV template for bulk upload
+- `GET /api/setup/items/csv-template` - Get CSV template
 - `POST /api/setup/items/csv-upload` - Upload items via CSV
 - `POST /api/setup/seed-categories` - Seed initial item categories
 - `GET /api/setup/users/all` - List all users
@@ -223,18 +198,19 @@ Order-driven hospital operating system where all hospital operations follow a un
 - `POST /api/setup/patients` - Create patient
 - `PUT /api/setup/patients/{id}` - Update patient
 
-### Patient Workflow
-- `POST /api/pre-admission/eligibility-check` - Eligibility check
-- `POST /api/pre-admission/admit` - Admit patient
-- `POST /api/patient/{id}/transition-to-ipd` - Phase transition
-- `GET /api/patient-workflow/stats` - Phase statistics
+## Theme Configuration
+```css
+/* Primary Colors */
+--primary: 24 95% 53%;           /* Orange #f97316 */
+--primary-foreground: 0 0% 100%; /* White */
+--background: 0 0% 100%;         /* White */
+--foreground: 222 47% 11%;       /* Dark gray */
 
-### Assets
-- `GET /api/assets` - List assets
-- `POST /api/assets` - Create asset
-- `PUT /api/assets/{id}` - Update asset
-- `GET /api/assets/maintenance-due` - Due maintenance
-- `POST /api/assets/maintenance` - Record maintenance
+/* Accent Colors */
+--urgent: 24 100% 50%;           /* Bright orange for urgent items */
+--success: 142 76% 36%;          /* Green */
+--destructive: 0 84% 60%;        /* Red */
+```
 
 ## Item CSV Upload Template
 | Column | Description | Example |

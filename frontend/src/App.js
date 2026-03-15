@@ -14,6 +14,7 @@ import DispatchPage from './pages/DispatchPage';
 import ReceivePage from './pages/ReceivePage';
 import AdminPage from './pages/AdminPage.jsx';
 import ReportsPage from './pages/ReportsPage';
+import SystemTestPage from './pages/SystemTestPage';
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
@@ -139,6 +140,14 @@ function AppRoutes() {
         element={
           <ProtectedRoute>
             <CreateReturnPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/system-test"
+        element={
+          <ProtectedRoute>
+            <SystemTestPage />
           </ProtectedRoute>
         }
       />
