@@ -16,7 +16,7 @@ import {
 import { Textarea } from '@/components/ui/textarea';
 import { 
   ArrowLeft, Package, AlertTriangle, Clock, CheckCircle2,
-  XCircle, User, Building2
+  XCircle, User, Building2, RotateCcw, Link2
 } from 'lucide-react';
 
 const statusConfig = {
@@ -101,6 +101,8 @@ const OrderDetailPage = () => {
   const config = statusConfig[order.status] || statusConfig.CREATED;
   const StatusIcon = config.icon;
   const canCancel = !['COMPLETED', 'CANCELLED'].includes(order.status);
+  const canCreateReturn = order.status === 'COMPLETED' && order.order_type === 'REGULAR';
+  const isReturnOrder = order.order_type === 'RETURN';
 
   return (
     <div className="min-h-screen bg-background pb-6 safe-area-top">
@@ -125,6 +127,34 @@ const OrderDetailPage = () => {
         {/* Order Info */}
         <Card className="bg-card/50">
           <CardContent className="p-4 space-y-3">
+            {/* Return Order Indicator */}
+            {isReturnOrder && (
+              <div className="flex items-center gap-2 p-2 rounded-lg bg-orange-500/10 border border-orange-500/30">
+                <RotateCcw className="w-4 h-4 text-orange-500" />
+                <span className="text-sm font-medium text-orange-500">Return Order</span>
+                {order.original_order_id && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="ml-auto h-6 text-xs"
+                    onClick={() => navigate(`/orders/${order.original_order_id}`)}
+                    data-testid="view-original-order-btn"
+                  >
+                    <Link2 className="w-3 h-3 mr-1" />
+                    View Original
+                  </Button>
+                )}
+              </div>
+            )}
+
+            {/* Return Reason */}
+            {isReturnOrder && order.return_reason && (
+              <div className="p-2 rounded-lg bg-muted/50">
+                <p className="text-sm text-muted-foreground mb-1">Return Reason</p>
+                <p className="text-sm font-medium">{order.return_reason}</p>
+              </div>
+            )}
+
             {order.priority === 'URGENT' && (
               <div className="flex items-center gap-2 p-2 rounded-lg bg-amber-500/10 border border-amber-500/30">
                 <AlertTriangle className="w-4 h-4 text-amber-500" />
@@ -257,17 +287,32 @@ const OrderDetailPage = () => {
         </div>
 
         {/* Actions */}
-        {canCancel && (
-          <Button
-            variant="destructive"
-            className="w-full touch-btn"
-            onClick={() => setCancelDialogOpen(true)}
-            data-testid="cancel-order-btn"
-          >
-            <XCircle className="w-4 h-4 mr-2" />
-            Cancel Order
-          </Button>
-        )}
+        <div className="space-y-2">
+          {/* Create Return Button - for completed regular orders */}
+          {canCreateReturn && (
+            <Button
+              className="w-full h-12 touch-btn bg-orange-500 hover:bg-orange-600"
+              onClick={() => navigate('/create-return', { state: { orderId: order.id } })}
+              data-testid="create-return-btn"
+            >
+              <RotateCcw className="w-4 h-4 mr-2" />
+              Create Return
+            </Button>
+          )}
+
+          {/* Cancel Button */}
+          {canCancel && (
+            <Button
+              variant="destructive"
+              className="w-full touch-btn"
+              onClick={() => setCancelDialogOpen(true)}
+              data-testid="cancel-order-btn"
+            >
+              <XCircle className="w-4 h-4 mr-2" />
+              Cancel Order
+            </Button>
+          )}
+        </div>
       </main>
 
       {/* Cancel Dialog */}

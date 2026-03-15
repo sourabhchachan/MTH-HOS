@@ -8,7 +8,7 @@ import requests
 import os
 
 # Use the public URL for testing
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://ops-validation.preview.emergentagent.com').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://returns-workflow-2.preview.emergentagent.com').rstrip('/')
 
 # Admin credentials for testing
 ADMIN_PHONE = "8888888888"

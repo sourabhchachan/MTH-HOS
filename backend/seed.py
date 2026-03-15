@@ -248,14 +248,14 @@ async def seed_data():
         for item in items:
             db.add(item)
         
-        # Create return reasons
+        # Create return reasons (predefined list per requirements)
         return_reasons = [
-            ReturnReason(reason="Unused medication"),
-            ReturnReason(reason="Patient discharged"),
-            ReturnReason(reason="Damaged/expired item"),
-            ReturnReason(reason="Incorrect item dispatched"),
-            ReturnReason(reason="Patient allergic reaction"),
-            ReturnReason(reason="Quantity excess"),
+            ReturnReason(reason="Unused"),
+            ReturnReason(reason="Wrong Item"),
+            ReturnReason(reason="Excess Quantity"),
+            ReturnReason(reason="Defective Item"),
+            ReturnReason(reason="Damaged Item"),
+            ReturnReason(reason="Other"),
         ]
         for reason in return_reasons:
             db.add(reason)

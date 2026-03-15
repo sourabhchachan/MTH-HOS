@@ -487,3 +487,62 @@ class ReturnReasonResponse(BaseModel):
     id: int
     reason: str
     is_active: bool
+
+
+# Billing Adjustment Schemas
+class BillingAdjustmentType(str, Enum):
+    RETURN_CREDIT = "RETURN_CREDIT"
+    RETURN_DEDUCTION = "RETURN_DEDUCTION"
+    MANUAL_ADJUSTMENT = "MANUAL_ADJUSTMENT"
+
+
+class BillingAdjustmentItemResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    
+    id: int
+    item_name: str
+    item_code: str
+    unit: str
+    cost_per_unit: Decimal
+    quantity_returned: int
+    line_amount: Decimal
+
+
+class BillingAdjustmentResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    
+    id: int
+    adjustment_number: str
+    original_billing_id: int
+    return_order_id: Optional[int] = None
+    adjustment_type: str
+    adjustment_amount: Decimal
+    reason: Optional[str] = None
+    is_credit: bool
+    credit_utilized: Decimal
+    created_at: datetime
+    items: List[BillingAdjustmentItemResponse] = []
+
+
+class ReturnOrderCreate(BaseModel):
+    """Schema for creating a return order from completed order"""
+    original_order_id: int
+    return_reason: str
+    notes: Optional[str] = None
+    items: List[OrderItemCreate]
+
+
+class ReturnableItemResponse(BaseModel):
+    """Items that can be returned from a completed order"""
+    order_item_id: int
+    item_id: int
+    item_name: str
+    item_code: str
+    unit: str
+    quantity_dispatched: int
+    quantity_received: int
+    quantity_already_returned: int
+    quantity_returnable: int
+    cost_per_unit: Decimal
+    billing_id: Optional[int] = None
+    billing_paid: bool = False

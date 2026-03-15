@@ -15,7 +15,7 @@ import {
 import { toast } from 'sonner';
 import { 
   ArrowLeft, Package, RefreshCw, AlertTriangle,
-  Clock, CheckCircle2, XCircle, ChevronRight, User, X, Filter, PackageCheck
+  Clock, CheckCircle2, XCircle, ChevronRight, User, X, Filter, PackageCheck, RotateCcw
 } from 'lucide-react';
 
 const statusConfig = {
@@ -134,10 +134,11 @@ const OrdersPage = () => {
   }
 
   const activeOrders = filteredOrders.filter(o => 
-    !['COMPLETED', 'CANCELLED'].includes(o.status)
+    !['COMPLETED', 'CANCELLED'].includes(o.status) && o.order_type !== 'RETURN'
   );
-  const completedOrders = filteredOrders.filter(o => o.status === 'COMPLETED');
-  const cancelledOrders = filteredOrders.filter(o => o.status === 'CANCELLED');
+  const completedOrders = filteredOrders.filter(o => o.status === 'COMPLETED' && o.order_type !== 'RETURN');
+  const cancelledOrders = filteredOrders.filter(o => o.status === 'CANCELLED' && o.order_type !== 'RETURN');
+  const returnOrders = filteredOrders.filter(o => o.order_type === 'RETURN');
 
   // Get filter label for display
   const getFilterLabel = () => {
@@ -192,14 +193,18 @@ const OrdersPage = () => {
 
       <main className="px-4 py-4">
         <Tabs value={tab} onValueChange={setTab} className="w-full">
-          <TabsList className="w-full grid grid-cols-3 mb-4 bg-gray-100">
-            <TabsTrigger value="active" data-testid="tab-active" className="data-[state=active]:bg-orange-500 data-[state=active]:text-white">
+          <TabsList className="w-full grid grid-cols-4 mb-4 bg-gray-100">
+            <TabsTrigger value="active" data-testid="tab-active" className="data-[state=active]:bg-orange-500 data-[state=active]:text-white text-xs px-1">
               Active ({activeOrders.length})
             </TabsTrigger>
-            <TabsTrigger value="completed" data-testid="tab-completed" className="data-[state=active]:bg-orange-500 data-[state=active]:text-white">
+            <TabsTrigger value="completed" data-testid="tab-completed" className="data-[state=active]:bg-orange-500 data-[state=active]:text-white text-xs px-1">
               Done ({completedOrders.length})
             </TabsTrigger>
-            <TabsTrigger value="cancelled" data-testid="tab-cancelled" className="data-[state=active]:bg-orange-500 data-[state=active]:text-white">
+            <TabsTrigger value="returns" data-testid="tab-returns" className="data-[state=active]:bg-orange-500 data-[state=active]:text-white text-xs px-1">
+              <RotateCcw className="w-3 h-3 mr-1" />
+              Returns ({returnOrders.length})
+            </TabsTrigger>
+            <TabsTrigger value="cancelled" data-testid="tab-cancelled" className="data-[state=active]:bg-orange-500 data-[state=active]:text-white text-xs px-1">
               Cancelled ({cancelledOrders.length})
             </TabsTrigger>
           </TabsList>
@@ -241,6 +246,16 @@ const OrdersPage = () => {
                 ) : (
                   cancelledOrders.map(order => (
                     <OrderCard key={order.id} order={order} onClick={() => navigate(`/orders/${order.id}`)} />
+                  ))
+                )}
+              </TabsContent>
+
+              <TabsContent value="returns" className="space-y-2 mt-0">
+                {returnOrders.length === 0 ? (
+                  <EmptyState message="No return orders" icon={RotateCcw} />
+                ) : (
+                  returnOrders.map(order => (
+                    <OrderCard key={order.id} order={order} onClick={() => navigate(`/orders/${order.id}`)} isReturn />
                   ))
                 )}
               </TabsContent>
@@ -314,12 +329,13 @@ const OrdersPage = () => {
   );
 };
 
-const OrderCard = ({ order, onClick, onQuickReceive }) => {
+const OrderCard = ({ order, onClick, onQuickReceive, isReturn }) => {
   const config = statusConfig[order.status] || statusConfig.CREATED;
   const StatusIcon = config.icon;
   const isUrgent = order.priority === 'URGENT';
   const itemCount = order.items?.length || 0;
   const showQuickReceive = order.status === 'FULLY_DISPATCHED' && onQuickReceive;
+  const isReturnOrder = order.order_type === 'RETURN' || isReturn;
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -328,7 +344,7 @@ const OrderCard = ({ order, onClick, onQuickReceive }) => {
 
   return (
     <Card 
-      className={`bg-card/50 cursor-pointer card-interactive ${isUrgent ? 'border-amber-500/30' : ''}`}
+      className={`bg-card/50 cursor-pointer card-interactive ${isUrgent ? 'border-amber-500/30' : ''} ${isReturnOrder ? 'border-orange-400/30 bg-orange-50/30' : ''}`}
       onClick={onClick}
       data-testid={`order-${order.id}`}
     >
@@ -336,12 +352,15 @@ const OrderCard = ({ order, onClick, onQuickReceive }) => {
         <div className="flex items-start justify-between gap-2">
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 mb-1">
+              {isReturnOrder && <RotateCcw className="w-4 h-4 text-orange-500" />}
               <span className="font-semibold">{order.order_number}</span>
               {isUrgent && <AlertTriangle className="w-4 h-4 text-amber-500" />}
-              {order.order_type === 'RETURN' && (
-                <Badge variant="outline" className="text-xs">Return</Badge>
-              )}
             </div>
+            {isReturnOrder && order.return_reason && (
+              <div className="text-xs text-orange-600 mb-1">
+                Reason: {order.return_reason}
+              </div>
+            )}
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <span>{itemCount} item{itemCount !== 1 ? 's' : ''}</span>
               <span>•</span>
@@ -381,9 +400,9 @@ const OrderCard = ({ order, onClick, onQuickReceive }) => {
   );
 };
 
-const EmptyState = ({ message }) => (
+const EmptyState = ({ message, icon: Icon = Package }) => (
   <div className="text-center py-12">
-    <Package className="w-12 h-12 mx-auto mb-3 text-muted-foreground opacity-50" />
+    <Icon className="w-12 h-12 mx-auto mb-3 text-muted-foreground opacity-50" />
     <p className="text-muted-foreground">{message}</p>
   </div>
 );

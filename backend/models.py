@@ -544,6 +544,52 @@ class ReturnReason(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
 
+class BillingAdjustmentType(str, enum.Enum):
+    RETURN_CREDIT = "RETURN_CREDIT"
+    RETURN_DEDUCTION = "RETURN_DEDUCTION"
+    MANUAL_ADJUSTMENT = "MANUAL_ADJUSTMENT"
+
+
+class BillingAdjustment(Base):
+    """
+    Billing adjustments for returns and corrections.
+    Original billing records are NEVER modified - adjustments are separate records.
+    """
+    __tablename__ = "billing_adjustments"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    adjustment_number = Column(String(30), unique=True, nullable=False)
+    original_billing_id = Column(Integer, ForeignKey("billing.id"), nullable=False)
+    return_order_id = Column(Integer, ForeignKey("orders.id"))
+    adjustment_type = Column(Enum(BillingAdjustmentType), nullable=False)
+    adjustment_amount = Column(Numeric(12, 2), nullable=False)  # Negative for deductions
+    reason = Column(Text)
+    is_credit = Column(Boolean, default=False)  # True if order was already paid
+    credit_utilized = Column(Numeric(12, 2), default=0)  # For tracking credit usage
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    created_by = Column(Integer, ForeignKey("users.id"))
+    
+    # Relationships
+    original_billing = relationship("Billing", foreign_keys=[original_billing_id])
+    return_order = relationship("Order", foreign_keys=[return_order_id])
+
+
+class BillingAdjustmentItem(Base):
+    """Line items for billing adjustments"""
+    __tablename__ = "billing_adjustment_items"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    adjustment_id = Column(Integer, ForeignKey("billing_adjustments.id", ondelete="CASCADE"), nullable=False)
+    original_billing_item_id = Column(Integer, ForeignKey("billing_items.id"))
+    item_id = Column(Integer, ForeignKey("items.id"), nullable=False)
+    item_name = Column(String(200), nullable=False)
+    item_code = Column(String(50), nullable=False)
+    unit = Column(String(50), nullable=False)
+    cost_per_unit = Column(Numeric(12, 2), nullable=False)
+    quantity_returned = Column(Integer, nullable=False)
+    line_amount = Column(Numeric(12, 2), nullable=False)  # Negative amount
+
+
 class AuditLog(Base):
     __tablename__ = "audit_log"
     

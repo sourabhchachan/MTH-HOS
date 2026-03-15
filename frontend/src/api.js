@@ -184,4 +184,12 @@ export const exportBillingDashboard = (params) => api.get('/dashboards/billing/e
 export const exportDepartmentWorkload = () => api.get('/dashboards/department-workload/export', { params: { format: 'csv' }, responseType: 'blob' });
 export const exportPatientDashboard = (status) => api.get('/dashboards/patients/export', { params: { status, format: 'csv' }, responseType: 'blob' });
 
+// ============ Return Order APIs ============
+export const getReturnableOrders = (params) => api.get('/returns/returnable-orders', { params });
+export const getReturnableItems = (orderId) => api.get(`/returns/order/${orderId}/returnable-items`);
+export const createReturnOrder = (data) => api.post('/returns/create', data);
+export const getReturnOrders = (params) => api.get('/returns/orders', { params });
+export const getBillingAdjustments = (params) => api.get('/returns/billing-adjustments', { params });
+export const getBillingEffectiveAmount = (billingId) => api.get(`/returns/billing/${billingId}/effective-amount`);
+
 export default api;
