@@ -52,37 +52,42 @@ const OrdersPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background pb-6 safe-area-top">
+    <div className="min-h-screen bg-white pb-20 safe-area-top">
       {/* Header */}
-      <header className="sticky top-0 z-40 bg-background/95 backdrop-blur border-b border-border px-4 py-3">
-        <div className="flex items-center gap-3">
-          <Button variant="ghost" size="icon" onClick={() => navigate('/')}>
-            <ArrowLeft className="w-5 h-5" />
-          </Button>
-          <h1 className="font-semibold text-lg flex-1">My Orders</h1>
-          <Button variant="ghost" size="icon" onClick={loadOrders} disabled={loading}>
-            <RefreshCw className={`w-5 h-5 ${loading ? 'animate-spin' : ''}`} />
+      <header className="sticky top-0 z-40 bg-white border-b border-gray-100 px-4 py-3">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <h1 className="text-xl font-bold text-orange-500">MTH</h1>
+            <span className="text-gray-300">|</span>
+            <span className="font-semibold text-gray-700">Orders</span>
+          </div>
+          <Button
+            onClick={() => navigate('/create-order')}
+            size="sm"
+            className="bg-orange-500 hover:bg-orange-600"
+          >
+            + New Order
           </Button>
         </div>
       </header>
 
       <main className="px-4 py-4">
         <Tabs value={tab} onValueChange={setTab} className="w-full">
-          <TabsList className="w-full grid grid-cols-3 mb-4">
-            <TabsTrigger value="active" data-testid="tab-active">
+          <TabsList className="w-full grid grid-cols-3 mb-4 bg-gray-100">
+            <TabsTrigger value="active" data-testid="tab-active" className="data-[state=active]:bg-orange-500 data-[state=active]:text-white">
               Active ({activeOrders.length})
             </TabsTrigger>
-            <TabsTrigger value="completed" data-testid="tab-completed">
+            <TabsTrigger value="completed" data-testid="tab-completed" className="data-[state=active]:bg-orange-500 data-[state=active]:text-white">
               Done ({completedOrders.length})
             </TabsTrigger>
-            <TabsTrigger value="cancelled" data-testid="tab-cancelled">
+            <TabsTrigger value="cancelled" data-testid="tab-cancelled" className="data-[state=active]:bg-orange-500 data-[state=active]:text-white">
               Cancelled ({cancelledOrders.length})
             </TabsTrigger>
           </TabsList>
 
           {loading ? (
             <div className="flex items-center justify-center py-12">
-              <div className="animate-spin w-8 h-8 border-2 border-primary border-t-transparent rounded-full" />
+              <div className="animate-spin w-8 h-8 border-2 border-orange-500 border-t-transparent rounded-full" />
             </div>
           ) : (
             <>

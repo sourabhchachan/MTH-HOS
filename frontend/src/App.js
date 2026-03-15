@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './AuthContext';
 import { Toaster } from '@/components/ui/sonner';
+import BottomNav from './components/BottomNav';
 
 // Pages
 import LoginPage from './pages/LoginPage';
@@ -15,6 +16,7 @@ import ReceivePage from './pages/ReceivePage';
 import AdminPage from './pages/AdminPage.jsx';
 import ReportsPage from './pages/ReportsPage';
 import SystemTestPage from './pages/SystemTestPage';
+import ProfilePage from './pages/ProfilePage';
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
@@ -151,6 +153,14 @@ function AppRoutes() {
           </ProtectedRoute>
         }
       />
+      <Route
+        path="/profile"
+        element={
+          <ProtectedRoute>
+            <ProfilePage />
+          </ProtectedRoute>
+        }
+      />
 
       {/* Catch all - redirect to home */}
       <Route path="*" element={<Navigate to="/" replace />} />
@@ -163,6 +173,7 @@ function App() {
     <BrowserRouter>
       <AuthProvider>
         <AppRoutes />
+        <BottomNav />
         <Toaster position="top-center" />
       </AuthProvider>
     </BrowserRouter>

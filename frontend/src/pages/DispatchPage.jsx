@@ -79,15 +79,16 @@ const DispatchPage = () => {
   const normalItems = queue.filter(i => i.order_priority === 'NORMAL');
 
   return (
-    <div className="min-h-screen bg-background pb-6 safe-area-top">
+    <div className="min-h-screen bg-white pb-20 safe-area-top">
       {/* Header */}
-      <header className="sticky top-0 z-40 bg-background/95 backdrop-blur border-b border-border px-4 py-3">
-        <div className="flex items-center gap-3">
-          <Button variant="ghost" size="icon" onClick={() => navigate('/')}>
-            <ArrowLeft className="w-5 h-5" />
-          </Button>
-          <h1 className="font-semibold text-lg flex-1">Dispatch Queue</h1>
-          <Button variant="ghost" size="icon" onClick={loadQueue} disabled={loading}>
+      <header className="sticky top-0 z-40 bg-white border-b border-gray-100 px-4 py-3">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <h1 className="text-xl font-bold text-orange-500">MTH</h1>
+            <span className="text-gray-300">|</span>
+            <span className="font-semibold text-gray-700">Dispatch</span>
+          </div>
+          <Button variant="ghost" size="icon" onClick={loadQueue} disabled={loading} className="text-gray-600">
             <RefreshCw className={`w-5 h-5 ${loading ? 'animate-spin' : ''}`} />
           </Button>
         </div>
@@ -96,13 +97,13 @@ const DispatchPage = () => {
       <main className="px-4 py-4 space-y-6">
         {loading ? (
           <div className="flex items-center justify-center py-12">
-            <div className="animate-spin w-8 h-8 border-2 border-primary border-t-transparent rounded-full" />
+            <div className="animate-spin w-8 h-8 border-2 border-orange-500 border-t-transparent rounded-full" />
           </div>
         ) : queue.length === 0 ? (
           <div className="text-center py-12">
-            <Package className="w-16 h-16 mx-auto mb-4 text-muted-foreground opacity-50" />
-            <h2 className="text-lg font-semibold mb-2">No Pending Items</h2>
-            <p className="text-muted-foreground">All items have been dispatched</p>
+            <Package className="w-16 h-16 mx-auto mb-4 text-gray-300" />
+            <h2 className="text-lg font-semibold text-gray-900 mb-2">No Pending Items</h2>
+            <p className="text-gray-500">All items have been dispatched</p>
           </div>
         ) : (
           <>
@@ -110,8 +111,8 @@ const DispatchPage = () => {
             {urgentItems.length > 0 && (
               <section>
                 <div className="flex items-center gap-2 mb-3">
-                  <AlertTriangle className="w-5 h-5 text-amber-500" />
-                  <h2 className="font-semibold text-amber-500">Urgent ({urgentItems.length})</h2>
+                  <AlertTriangle className="w-5 h-5 text-orange-500" />
+                  <h2 className="font-semibold text-orange-500">Urgent ({urgentItems.length})</h2>
                 </div>
                 <div className="space-y-2">
                   {urgentItems.map((item) => (

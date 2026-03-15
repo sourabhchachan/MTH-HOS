@@ -44,7 +44,7 @@ const DashboardPage = () => {
   const pendingReceive = dashboard?.pending_receive_items || [];
 
   return (
-    <div className="min-h-screen bg-white pb-24 safe-area-top">
+    <div className="min-h-screen bg-white pb-20 safe-area-top">
       {/* Header */}
       <header className="sticky top-0 z-40 bg-white border-b border-gray-100 px-4 py-3">
         <div className="flex items-center justify-between">
@@ -56,39 +56,19 @@ const DashboardPage = () => {
               <p className="text-xs text-gray-500">{user?.primary_department?.name || 'Staff'}</p>
             </div>
           </div>
-          <div className="flex items-center gap-1">
-            {isAdmin && (
-              <>
-                <Button 
-                  variant="ghost" 
-                  size="icon"
-                  onClick={() => navigate('/admin')}
-                  className="text-gray-600 hover:text-orange-500 hover:bg-orange-50"
-                  data-testid="admin-btn"
-                >
-                  <Settings className="w-5 h-5" />
-                </Button>
-                <Button 
-                  variant="ghost" 
-                  size="icon"
-                  onClick={() => navigate('/reports')}
-                  className="text-gray-600 hover:text-orange-500 hover:bg-orange-50"
-                  data-testid="reports-btn"
-                >
-                  <BarChart3 className="w-5 h-5" />
-                </Button>
-              </>
-            )}
-            <Button 
-              variant="ghost" 
-              size="icon"
-              onClick={logout}
-              className="text-gray-600 hover:text-red-500 hover:bg-red-50"
-              data-testid="logout-btn"
-            >
-              <LogOut className="w-5 h-5" />
-            </Button>
-          </div>
+          {isAdmin && (
+            <div className="flex items-center gap-1">
+              <Button 
+                variant="ghost" 
+                size="icon"
+                onClick={() => navigate('/admin')}
+                className="text-gray-600 hover:text-orange-500 hover:bg-orange-50"
+                data-testid="admin-btn"
+              >
+                <Settings className="w-5 h-5" />
+              </Button>
+            </div>
+          )}
         </div>
       </header>
 
@@ -180,12 +160,12 @@ const DashboardPage = () => {
         {dispatchQueue.length > 0 && (
           <section>
             <div className="flex items-center justify-between mb-3">
-              <h2 className="font-semibold">Dispatch Queue</h2>
+              <h2 className="font-semibold text-gray-900">Dispatch Queue</h2>
               <Button 
                 variant="ghost" 
                 size="sm"
                 onClick={() => navigate('/dispatch')}
-                className="text-primary"
+                className="text-orange-500 hover:text-orange-600"
               >
                 View All <ChevronRight className="w-4 h-4 ml-1" />
               </Button>
@@ -194,8 +174,8 @@ const DashboardPage = () => {
               {dispatchQueue.slice(0, 3).map((item) => (
                 <Card 
                   key={item.order_item_id} 
-                  className={`bg-card/50 cursor-pointer card-interactive ${
-                    item.order_priority === 'URGENT' ? 'border-amber-500/50 urgent-pulse' : ''
+                  className={`bg-gray-50 border-gray-200 cursor-pointer hover:bg-gray-100 transition-colors ${
+                    item.order_priority === 'URGENT' ? 'border-l-4 border-l-orange-500' : ''
                   }`}
                   onClick={() => navigate('/dispatch')}
                 >
@@ -203,16 +183,16 @@ const DashboardPage = () => {
                     <div className="flex items-center justify-between">
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2">
-                          <p className="font-medium truncate">{item.item_name}</p>
+                          <p className="font-medium text-gray-900 truncate">{item.item_name}</p>
                           {item.order_priority === 'URGENT' && (
-                            <AlertTriangle className="w-4 h-4 text-amber-500 flex-shrink-0" />
+                            <Badge className="bg-orange-100 text-orange-700 border-0">Urgent</Badge>
                           )}
                         </div>
-                        <p className="text-sm text-muted-foreground">
+                        <p className="text-sm text-gray-500">
                           {item.ordering_department} • Qty: {item.quantity_pending}
                         </p>
                       </div>
-                      <Badge variant="secondary" className="ml-2">
+                      <Badge variant="outline" className="ml-2 text-gray-600 border-gray-300">
                         {item.order_number}
                       </Badge>
                     </div>
@@ -227,12 +207,12 @@ const DashboardPage = () => {
         {pendingReceive.length > 0 && (
           <section>
             <div className="flex items-center justify-between mb-3">
-              <h2 className="font-semibold">Pending Receive</h2>
+              <h2 className="font-semibold text-gray-900">Pending Receive</h2>
               <Button 
                 variant="ghost" 
                 size="sm"
                 onClick={() => navigate('/receive')}
-                className="text-primary"
+                className="text-orange-500 hover:text-orange-600"
               >
                 View All <ChevronRight className="w-4 h-4 ml-1" />
               </Button>
@@ -241,13 +221,13 @@ const DashboardPage = () => {
               {pendingReceive.slice(0, 3).map((item) => (
                 <Card 
                   key={item.id} 
-                  className="bg-card/50 cursor-pointer card-interactive"
+                  className="bg-gray-50 border-gray-200 cursor-pointer hover:bg-gray-100 transition-colors"
                   onClick={() => navigate('/receive')}
                 >
                   <CardContent className="p-3">
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="font-medium">Dispatch #{item.id}</p>
+                        <p className="font-medium text-gray-900">Dispatch #{item.id}</p>
                         <p className="text-sm text-muted-foreground">
                           Qty: {item.quantity_dispatched} • {new Date(item.dispatched_at).toLocaleTimeString()}
                         </p>
@@ -281,48 +261,6 @@ const DashboardPage = () => {
           </Card>
         </section>
       </main>
-
-      {/* Bottom Navigation */}
-      <nav className="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur border-t border-border bottom-nav">
-        <div className="grid grid-cols-4 gap-1 px-2 py-2">
-          <Button
-            variant="ghost"
-            className="flex-col h-auto py-2 gap-1"
-            onClick={() => navigate('/')}
-            data-testid="nav-home"
-          >
-            <TrendingUp className="w-5 h-5" />
-            <span className="text-xs">Home</span>
-          </Button>
-          <Button
-            variant="ghost"
-            className="flex-col h-auto py-2 gap-1"
-            onClick={() => navigate('/orders')}
-            data-testid="nav-orders"
-          >
-            <Package className="w-5 h-5" />
-            <span className="text-xs">Orders</span>
-          </Button>
-          <Button
-            variant="ghost"
-            className="flex-col h-auto py-2 gap-1"
-            onClick={() => navigate('/dispatch')}
-            data-testid="nav-dispatch"
-          >
-            <Clock className="w-5 h-5" />
-            <span className="text-xs">Dispatch</span>
-          </Button>
-          <Button
-            variant="ghost"
-            className="flex-col h-auto py-2 gap-1"
-            onClick={() => navigate('/receive')}
-            data-testid="nav-receive"
-          >
-            <CheckCircle2 className="w-5 h-5" />
-            <span className="text-xs">Receive</span>
-          </Button>
-        </div>
-      </nav>
     </div>
   );
 };

@@ -89,15 +89,16 @@ const ReceivePage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background pb-6 safe-area-top">
+    <div className="min-h-screen bg-white pb-20 safe-area-top">
       {/* Header */}
-      <header className="sticky top-0 z-40 bg-background/95 backdrop-blur border-b border-border px-4 py-3">
-        <div className="flex items-center gap-3">
-          <Button variant="ghost" size="icon" onClick={() => navigate('/')}>
-            <ArrowLeft className="w-5 h-5" />
-          </Button>
-          <h1 className="font-semibold text-lg flex-1">Pending Receive</h1>
-          <Button variant="ghost" size="icon" onClick={loadItems} disabled={loading}>
+      <header className="sticky top-0 z-40 bg-white border-b border-gray-100 px-4 py-3">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <h1 className="text-xl font-bold text-orange-500">MTH</h1>
+            <span className="text-gray-300">|</span>
+            <span className="font-semibold text-gray-700">Receive</span>
+          </div>
+          <Button variant="ghost" size="icon" onClick={loadItems} disabled={loading} className="text-gray-600">
             <RefreshCw className={`w-5 h-5 ${loading ? 'animate-spin' : ''}`} />
           </Button>
         </div>
@@ -106,13 +107,13 @@ const ReceivePage = () => {
       <main className="px-4 py-4">
         {loading ? (
           <div className="flex items-center justify-center py-12">
-            <div className="animate-spin w-8 h-8 border-2 border-primary border-t-transparent rounded-full" />
+            <div className="animate-spin w-8 h-8 border-2 border-orange-500 border-t-transparent rounded-full" />
           </div>
         ) : items.length === 0 ? (
           <div className="text-center py-12">
-            <CheckCircle2 className="w-16 h-16 mx-auto mb-4 text-muted-foreground opacity-50" />
-            <h2 className="text-lg font-semibold mb-2">All Caught Up!</h2>
-            <p className="text-muted-foreground">No items pending receipt</p>
+            <CheckCircle2 className="w-16 h-16 mx-auto mb-4 text-gray-300" />
+            <h2 className="text-lg font-semibold text-gray-900 mb-2">All Caught Up!</h2>
+            <p className="text-gray-500">No items pending receipt</p>
           </div>
         ) : (
           <div className="space-y-2">
