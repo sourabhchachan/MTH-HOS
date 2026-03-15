@@ -141,6 +141,26 @@ const AdminPage = () => {
             </div>
           </CardContent>
         </Card>
+
+        {/* Operational Simulation */}
+        <Card className="border-purple-200 bg-purple-50 mt-4">
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="font-medium text-purple-700">Operational Simulation</p>
+                <p className="text-sm text-purple-600">Run hospital workflow simulations to validate operations</p>
+              </div>
+              <Button 
+                onClick={() => navigate('/simulation')}
+                className="bg-purple-500 hover:bg-purple-600"
+                data-testid="simulation-btn"
+              >
+                <Play className="w-4 h-4 mr-2" />
+                Simulate
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
       </main>
     </div>
   );

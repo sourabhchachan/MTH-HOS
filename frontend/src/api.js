@@ -163,4 +163,15 @@ export const seedDepartments = () => api.post('/seed/departments');
 export const seedVendors = () => api.post('/seed/vendors');
 export const seedCategoriesData = () => api.post('/seed/categories');
 
+// ============ Simulation APIs ============
+export const getSimulationMetrics = () => api.get('/simulation/metrics');
+export const getSimulationSummary = () => api.get('/simulation/summary');
+export const runAllScenarios = () => api.post('/simulation/run-all');
+export const runPatientAdmissionScenario = () => api.post('/simulation/scenario/patient-admission');
+export const runClinicalOrderScenario = () => api.post('/simulation/scenario/clinical-order');
+export const runPharmacyOrderScenario = () => api.post('/simulation/scenario/pharmacy-order');
+export const runReturnOrderScenario = () => api.post('/simulation/scenario/return-order');
+export const runPartialDispatchScenario = () => api.post('/simulation/scenario/partial-dispatch');
+export const resetSimulationData = () => api.post('/simulation/reset');
+
 export default api;

@@ -18,6 +18,7 @@ import ReportsPage from './pages/ReportsPage';
 import SystemTestPage from './pages/SystemTestPage';
 import ProfilePage from './pages/ProfilePage';
 import DataSeedPage from './pages/DataSeedPage';
+import SimulationPage from './pages/SimulationPage';
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
@@ -167,6 +168,14 @@ function AppRoutes() {
         element={
           <ProtectedRoute>
             <DataSeedPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/simulation"
+        element={
+          <ProtectedRoute>
+            <SimulationPage />
           </ProtectedRoute>
         }
       />

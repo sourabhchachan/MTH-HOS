@@ -4,7 +4,7 @@ import json
 from datetime import datetime
 
 class MTHBackendTester:
-    def __init__(self, base_url="https://mth-hospital-ops-1.preview.emergentagent.com"):
+    def __init__(self, base_url="https://ops-validation.preview.emergentagent.com"):
         self.base_url = base_url
         self.admin_token = None
         self.ward_token = None
