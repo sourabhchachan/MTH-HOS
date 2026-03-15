@@ -95,4 +95,44 @@ export const receiveItem = (data) => api.post('/receive', data);
 export const getReturnReasons = () => api.get('/return-reasons');
 export const createReturnReason = (data) => api.post('/return-reasons', data);
 
+// ============ Admin Setup APIs ============
+
+// Vendors (Admin)
+export const getAllVendors = () => api.get('/setup/vendors/all');
+export const updateVendor = (id, data) => api.put(`/setup/vendors/${id}`, data);
+export const toggleVendorActive = (id) => api.put(`/setup/vendors/${id}/toggle-active`);
+
+// Departments (Admin)
+export const getAllDepartments = () => api.get('/setup/departments/all');
+
+// Items (Admin)
+export const getAllItems = () => api.get('/setup/items/all');
+export const getItemCSVTemplate = () => api.get('/setup/items/csv-template');
+export const uploadItemsCSV = (file) => {
+  const formData = new FormData();
+  formData.append('file', file);
+  return api.post('/setup/items/csv-upload', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' }
+  });
+};
+
+// Users (Admin)
+export const getAllUsers = () => api.get('/setup/users/all');
+export const resetUserPassword = (id, password) => api.put(`/setup/users/${id}/reset-password`, { new_password: password });
+
+// Patients (Admin)
+export const getAllPatients = (search = '') => api.get('/setup/patients', { params: { search } });
+export const createPatientAdmin = (data) => api.post('/setup/patients', data);
+export const updatePatientAdmin = (id, data) => api.put(`/setup/patients/${id}`, data);
+
+// Assets
+export const getAssets = (params = {}) => api.get('/assets', { params });
+export const createAsset = (data) => api.post('/assets', data);
+export const updateAsset = (id, data) => api.put(`/assets/${id}`, data);
+export const getMaintenanceDue = (daysAhead = 7) => api.get('/assets/maintenance-due', { params: { days_ahead: daysAhead } });
+export const recordMaintenance = (data) => api.post('/assets/maintenance', data);
+
+// Seed categories
+export const seedCategories = () => api.post('/setup/seed-categories');
+
 export default api;

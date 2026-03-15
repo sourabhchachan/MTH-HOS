@@ -12,7 +12,7 @@ import OrdersPage from './pages/OrdersPage';
 import OrderDetailPage from './pages/OrderDetailPage';
 import DispatchPage from './pages/DispatchPage';
 import ReceivePage from './pages/ReceivePage';
-import AdminPage from './pages/AdminPage';
+import AdminPage from './pages/AdminPage.jsx';
 import ReportsPage from './pages/ReportsPage';
 
 // Protected Route Component

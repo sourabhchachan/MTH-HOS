@@ -34,6 +34,13 @@ from auth import (
 router = APIRouter()
 
 
+# Helper function to safely get enum value (handles both enum and string types)
+def get_enum_value(val, default):
+    if val is None:
+        return default
+    return val.value if hasattr(val, 'value') else str(val)
+
+
 # ============ AUTH ROUTES ============
 @router.post("/auth/login", response_model=Token)
 async def login(request: LoginRequest, db: AsyncSession = Depends(get_db)):
@@ -500,9 +507,9 @@ async def list_items(
             vendor_id=item.vendor_id if current_user.is_admin or current_user.can_view_costs else None,
             all_departments_allowed=item.all_departments_allowed,
             workflow_phase=item.workflow_phase,
-            priority_requirement=item.priority_requirement.value if item.priority_requirement else "NON_MANDATORY",
-            patient_ipd_requirement=item.patient_ipd_requirement.value if item.patient_ipd_requirement else "NON_MANDATORY",
-            ipd_status_allowed=item.ipd_status_allowed.value if item.ipd_status_allowed else "BOTH",
+            priority_requirement=get_enum_value(item.priority_requirement, "NON_MANDATORY"),
+            patient_ipd_requirement=get_enum_value(item.patient_ipd_requirement, "NON_MANDATORY"),
+            ipd_status_allowed=get_enum_value(item.ipd_status_allowed, "BOTH"),
             cost_per_unit=item.cost_per_unit if current_user.is_admin or current_user.can_view_costs else 0,
             is_active=item.is_active,
             created_at=item.created_at,
@@ -551,9 +558,9 @@ async def list_orderable_items(
                 vendor_id=None,
                 all_departments_allowed=item.all_departments_allowed,
                 workflow_phase=item.workflow_phase,
-                priority_requirement=item.priority_requirement.value if item.priority_requirement else "NON_MANDATORY",
-                patient_ipd_requirement=item.patient_ipd_requirement.value if item.patient_ipd_requirement else "NON_MANDATORY",
-                ipd_status_allowed=item.ipd_status_allowed.value if item.ipd_status_allowed else "BOTH",
+                priority_requirement=get_enum_value(item.priority_requirement, "NON_MANDATORY"),
+                patient_ipd_requirement=get_enum_value(item.patient_ipd_requirement, "NON_MANDATORY"),
+                ipd_status_allowed=get_enum_value(item.ipd_status_allowed, "BOTH"),
                 cost_per_unit=0,
                 is_active=item.is_active,
                 created_at=item.created_at,
@@ -591,6 +598,7 @@ async def create_item(
     )
     item = result.scalar_one()
     ordering_depts = [od.department for od in item.ordering_departments]
+    
     return ItemResponse(
         id=item.id,
         name=item.name,
@@ -602,9 +610,9 @@ async def create_item(
         vendor_id=item.vendor_id,
         all_departments_allowed=item.all_departments_allowed,
         workflow_phase=item.workflow_phase,
-        priority_requirement=item.priority_requirement.value if item.priority_requirement else "NON_MANDATORY",
-        patient_ipd_requirement=item.patient_ipd_requirement.value if item.patient_ipd_requirement else "NON_MANDATORY",
-        ipd_status_allowed=item.ipd_status_allowed.value if item.ipd_status_allowed else "BOTH",
+        priority_requirement=get_enum_value(item.priority_requirement, "NON_MANDATORY"),
+        patient_ipd_requirement=get_enum_value(item.patient_ipd_requirement, "NON_MANDATORY"),
+        ipd_status_allowed=get_enum_value(item.ipd_status_allowed, "BOTH"),
         cost_per_unit=item.cost_per_unit,
         is_active=item.is_active,
         created_at=item.created_at,
@@ -655,6 +663,7 @@ async def update_item(
     )
     item = result.scalar_one()
     ordering_depts = [od.department for od in item.ordering_departments]
+    
     return ItemResponse(
         id=item.id,
         name=item.name,
@@ -666,9 +675,9 @@ async def update_item(
         vendor_id=item.vendor_id,
         all_departments_allowed=item.all_departments_allowed,
         workflow_phase=item.workflow_phase,
-        priority_requirement=item.priority_requirement.value if item.priority_requirement else "NON_MANDATORY",
-        patient_ipd_requirement=item.patient_ipd_requirement.value if item.patient_ipd_requirement else "NON_MANDATORY",
-        ipd_status_allowed=item.ipd_status_allowed.value if item.ipd_status_allowed else "BOTH",
+        priority_requirement=get_enum_value(item.priority_requirement, "NON_MANDATORY"),
+        patient_ipd_requirement=get_enum_value(item.patient_ipd_requirement, "NON_MANDATORY"),
+        ipd_status_allowed=get_enum_value(item.ipd_status_allowed, "BOTH"),
         cost_per_unit=item.cost_per_unit,
         is_active=item.is_active,
         created_at=item.created_at,

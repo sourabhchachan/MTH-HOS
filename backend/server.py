@@ -15,6 +15,7 @@ from billing import router as billing_router
 from reports import router as reports_router
 from patient_workflow import router as patient_workflow_router
 from assets import router as assets_router
+from setup import router as setup_router
 
 # Configure logging
 logging.basicConfig(
@@ -57,6 +58,7 @@ app.include_router(billing_router, prefix="/api")
 app.include_router(reports_router, prefix="/api")
 app.include_router(patient_workflow_router, prefix="/api")
 app.include_router(assets_router, prefix="/api")
+app.include_router(setup_router, prefix="/api")
 
 
 @app.get("/")
