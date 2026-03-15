@@ -65,6 +65,21 @@
             </p>
         </a>
         <script>
+            // Position Emergent badge above bottom nav on mobile
+            function positionBadge() {
+                var badge = document.getElementById('emergent-badge');
+                if (badge) {
+                    if (window.innerWidth < 768) {
+                        badge.style.bottom = '90px';
+                    } else {
+                        badge.style.bottom = '16px';
+                    }
+                }
+            }
+            window.addEventListener('load', positionBadge);
+            window.addEventListener('resize', positionBadge);
+        </script>
+        <script>
             !(function (t, e) {
                 var o, n, p, r;
                 e.__SV ||

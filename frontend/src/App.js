@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './AuthContext';
 import { Toaster } from '@/components/ui/sonner';
@@ -214,6 +214,26 @@ function AppRoutes() {
 }
 
 function App() {
+  // Fix Emergent badge position on mobile
+  useEffect(() => {
+    const fixBadgePosition = () => {
+      const badge = document.getElementById('emergent-badge');
+      if (badge) {
+        if (window.innerWidth < 768) {
+          badge.style.setProperty('bottom', '85px', 'important');
+        } else {
+          badge.style.setProperty('bottom', '16px', 'important');
+        }
+      }
+    };
+    // Run immediately and on resize
+    fixBadgePosition();
+    // Also run after a delay to ensure the badge is loaded
+    setTimeout(fixBadgePosition, 1000);
+    window.addEventListener('resize', fixBadgePosition);
+    return () => window.removeEventListener('resize', fixBadgePosition);
+  }, []);
+
   return (
     <BrowserRouter>
       <AuthProvider>
