@@ -30,11 +30,18 @@ router = APIRouter(prefix="/backups", tags=["Database Backups"])
 # Backup configuration
 BACKUP_DIR = Path("/app/backups")
 BACKUP_RETENTION_DAYS = 30
-DB_HOST = "127.0.0.1"
-DB_PORT = "5432"
-DB_NAME = "mth_hospital"
-DB_USER = "mthuser"
-DB_PASSWORD = "mthpass123"
+
+# Parse DATABASE_URL for backup credentials (if local PostgreSQL)
+DATABASE_URL = os.environ.get('DATABASE_URL', '')
+IS_EXTERNAL_DB = 'pooler.supabase.com' in DATABASE_URL or 'supabase.co' in DATABASE_URL
+
+# For external databases like Supabase, backups are managed by the provider
+# Local database backup settings (used only for local PostgreSQL)
+DB_HOST = os.environ.get('DB_HOST', '127.0.0.1')
+DB_PORT = os.environ.get('DB_PORT', '5432')
+DB_NAME = os.environ.get('DB_NAME', 'postgres')
+DB_USER = os.environ.get('DB_USER', 'postgres')
+DB_PASSWORD = os.environ.get('DB_PASSWORD', '')
 
 
 # ============ SCHEMAS ============
@@ -98,7 +105,14 @@ def perform_backup() -> tuple[bool, str, float, float]:
     """
     Perform PostgreSQL backup using pg_dump.
     Returns: (success, filename, size_mb, duration_seconds)
+    
+    Note: For external databases (Supabase, RDS, etc.), backups are managed
+    by the provider. This function only works with local PostgreSQL instances.
     """
+    # Check if using external database
+    if IS_EXTERNAL_DB:
+        return (False, "", 0, 0)
+    
     ensure_backup_dir()
     
     filename = get_backup_filename()
@@ -193,7 +207,16 @@ async def create_backup(
     """
     Manually trigger database backup - Admin only.
     Backup is created immediately and stored in /app/backups/
+    
+    Note: For external databases (Supabase), backups are managed by the provider.
     """
+    # Check if using external database
+    if IS_EXTERNAL_DB:
+        return BackupResponse(
+            success=False,
+            message="Database backups are managed by Supabase. Please use the Supabase dashboard for backup management."
+        )
+    
     success, result, size_mb, duration = perform_backup()
     
     if success:
