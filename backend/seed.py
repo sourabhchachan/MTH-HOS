@@ -54,7 +54,7 @@ async def seed_data():
         
         # Create admin user
         admin_user = User(
-            phone="9999999999",
+            phone="1234567890",
             name="System Admin",
             email="admin@mthhospital.com",
             password_hash=get_password_hash("admin123"),
@@ -316,7 +316,7 @@ async def seed_data():
         await db.commit()
         print("Seed data created successfully!")
         print("\n=== Login Credentials ===")
-        print("Admin: 9999999999 / admin123")
+        print("Admin: 1234567890 / admin123")
         print("Ward A Doctor: 9876543210 / user123")
         print("Ward A Nurse: 9876543211 / user123")
         print("Pharmacist: 9876543212 / user123")

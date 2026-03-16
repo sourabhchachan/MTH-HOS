@@ -308,6 +308,10 @@ Full payment management with partial payment support and invoice generation:
   - Database Backup System (pg_dump, 30-day retention)
   - Performance Monitoring (API response times, p50/p95/p99)
   - Stress Test Mode (Light: 500, Medium: 2000, Heavy: 5000 orders)
+- [x] UI/Credential Updates (March 16, 2026)
+  - Admin credentials updated to 1234567890 / admin123
+  - "Made with Emergent" badge removed from UI
+  - Demo credentials display updated on login page
 
 ## P1 (Important) - Backlog
 - [ ] Shadow Deployment Testing - Next phase after hardening
@@ -327,10 +331,10 @@ Full payment management with partial payment support and invoice generation:
 - [ ] Cloud backup integration (S3/GCS)
 - [ ] Vendor reconciliation reports
 
-## Login Credentials
+## Login Credentials (Updated March 16, 2026)
 | Role | Phone | Password |
 |------|-------|----------|
-| System Admin | 9999999999 | admin123 |
+| System Admin | 1234567890 | admin123 |
 | Hospital Admin | 9999999998 | 1234 |
 | Ward Doctor | 9876543210 | 1234 |
 | ICU Consultant | 9876543220 | 1234 |

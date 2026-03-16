@@ -148,18 +148,3 @@ input:focus, select:focus, textarea:focus {
 [data-state="active"] {
   @apply text-primary border-b-primary;
 }
-
-/* Move Emergent badge above bottom navigation on mobile - high specificity override */
-body a#emergent-badge,
-html body a#emergent-badge,
-a[id="emergent-badge"] {
-  bottom: 85px !important;
-}
-
-@media (min-width: 768px) {
-  body a#emergent-badge,
-  html body a#emergent-badge,
-  a[id="emergent-badge"] {
-    bottom: 16px !important;
-  }
-}

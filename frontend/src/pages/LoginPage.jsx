@@ -126,7 +126,7 @@ const LoginPage = () => {
       {/* Demo credentials - at bottom */}
       <div className="pb-6 px-6">
         <div className="text-center text-xs text-gray-400 space-y-0.5">
-          <p>Demo: 9999999999 / admin123</p>
+          <p>Demo: 1234567890 / admin123</p>
         </div>
       </div>
     </div>
