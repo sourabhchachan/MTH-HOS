@@ -1,6 +1,6 @@
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
 from sqlalchemy.orm import declarative_base
-from sqlalchemy.pool import NullPool
+from sqlalchemy.pool import AsyncAdaptedQueuePool
 import os
 from dotenv import load_dotenv
 from pathlib import Path
@@ -10,9 +10,14 @@ load_dotenv(ROOT_DIR / '.env')
 
 DATABASE_URL = os.environ.get('DATABASE_URL')
 
+# Use connection pooling for better performance with external databases
 engine = create_async_engine(
     DATABASE_URL,
-    poolclass=NullPool,
+    poolclass=AsyncAdaptedQueuePool,
+    pool_size=5,
+    max_overflow=10,
+    pool_pre_ping=True,
+    pool_recycle=300,
     echo=False,
     connect_args={
         "statement_cache_size": 0,
