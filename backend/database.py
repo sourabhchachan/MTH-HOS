@@ -13,7 +13,11 @@ DATABASE_URL = os.environ.get('DATABASE_URL')
 engine = create_async_engine(
     DATABASE_URL,
     poolclass=NullPool,
-    echo=False
+    echo=False,
+    connect_args={
+        "statement_cache_size": 0,
+        "prepared_statement_cache_size": 0,
+    }
 )
 
 AsyncSessionLocal = async_sessionmaker(
