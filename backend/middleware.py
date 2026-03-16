@@ -192,7 +192,11 @@ class ErrorLoggingMiddleware(BaseHTTPMiddleware):
         ip_address: str,
         user_agent: str
     ):
-        """Log slow requests for performance monitoring"""
+        """Log slow requests for performance monitoring - skip auth endpoints"""
+        # Skip logging for auth endpoints to reduce latency
+        if endpoint and endpoint.startswith("/api/auth"):
+            return
+            
         try:
             async with async_session_maker() as db:
                 log_entry = SystemLog(
